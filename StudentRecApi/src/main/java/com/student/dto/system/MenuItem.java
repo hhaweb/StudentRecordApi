@@ -1,5 +1,6 @@
 package com.student.dto.system;
 
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.Getter;
@@ -8,7 +9,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MenuItem {
+public class MenuItem implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String label;
     public String icon;
     public List<String> routerLink;

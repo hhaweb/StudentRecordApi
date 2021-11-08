@@ -114,15 +114,15 @@ public class AuthController {
 		List<RoutePermission>  routePermissionList = userService.getRoutePermissionByRoleNameList(roles);		
 		
 	
-		List<Menus> filterMenuList = new ArrayList<Menus>();
-		for (RoutePermission permission : routePermissionList) {
-			if(permission != null) {
-				filterMenuList.add(getMenus(permission.getRouterLink(), fullMenuList));
-			}
-		}
+//		List<Menus> filterMenuList = new ArrayList<Menus>();
+//		for (RoutePermission permission : routePermissionList) {
+//			if(permission != null) {
+//				filterMenuList.add(getMenus(permission.getRouterLink(), fullMenuList));
+//			}
+//		}
 		
-		configData.setRoutePermissions(userService.getRoutePermissionByRoleNameList(roles));
-		configData.setMenus(filterMenuList);
+	//	configData.setRoutePermissions(routePermissionList);
+		configData.setMenus(fullMenuList);
 		return configData;
 	}
 	
