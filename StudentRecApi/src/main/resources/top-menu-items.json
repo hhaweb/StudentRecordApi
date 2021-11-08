@@ -1,0 +1,22 @@
+[
+	{
+		"label": "Students",
+		"icon": "pi pi-users",
+		"items": [
+			{
+				"label": "Student List",
+				"icon": "pi pi-fw pi-list",
+				"routerLink": [
+					"/student/student-list"
+				]
+			}
+		]
+	},
+	{
+		"label": "Upload",
+		"icon": "pi pi-users",
+		"routerLink": [
+			"/upload/data-upload"
+		]
+	}
+]
