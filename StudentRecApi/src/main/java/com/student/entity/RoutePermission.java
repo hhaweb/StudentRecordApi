@@ -1,4 +1,4 @@
-package com.student.entity.user;
+package com.student.entity;
 
 import java.io.Serializable;
 
@@ -12,34 +12,38 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.student.config.ERole;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "user_role")
+@Table(name = "route_permission")
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserRole implements Serializable {
-	
+public class RoutePermission implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-    private Long id;
-    
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="user_id")
-	private User user;
-	
-	@ManyToOne(fetch=FetchType.EAGER)
+	private Long id;
+
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="role_id")
 	private Role role;
-
 	
+	@Column(name = "router_link")
+	private String routerLink;
+	
+	@Column(name = "page_name")
+	private String pageName;
+	
+	@Column(name = "write_access")
+	private Boolean writeAccess;
 }

@@ -1,4 +1,4 @@
-package com.student.dto.user;
+package com.student.dto;
 
 import java.util.Collection;
 import java.util.List;
@@ -10,8 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.student.dto.system.Menus;
-import com.student.entity.user.User;
+import com.student.entity.User;
 
 public class UserDetailsImpl implements UserDetails {
 	private static final long serialVersionUID = 1L;
@@ -20,7 +19,6 @@ public class UserDetailsImpl implements UserDetails {
 
 	private String userName;
 
-	private String email;
 
 	@JsonIgnore
 	private String password;
@@ -30,11 +28,10 @@ public class UserDetailsImpl implements UserDetails {
 
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(Long id, String userName, String email, String password,
+	public UserDetailsImpl(Long id, String userName, String password,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.userName = userName;
-		this.email = email;
 		this.password = password;
 		this.authorities = authorities;
 		
@@ -48,7 +45,6 @@ public class UserDetailsImpl implements UserDetails {
 		return new UserDetailsImpl(
 				user.getId(), 
 				user.getUserName(), 
-				user.getEmail(),
 				user.getPassword(), 
 				authorities);
 	}
@@ -62,9 +58,6 @@ public class UserDetailsImpl implements UserDetails {
 		return id;
 	}
 
-	public String getEmail() {
-		return email;
-	}
 
 	@Override
 	public String getPassword() {

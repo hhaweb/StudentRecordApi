@@ -1,11 +1,11 @@
-package com.student.repository.user;
+package com.student.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.student.config.ERole;
-import com.student.entity.user.Role;
+import com.student.entity.Role;
 
 
 public interface RoleRepository extends JpaRepository<Role, Integer>{

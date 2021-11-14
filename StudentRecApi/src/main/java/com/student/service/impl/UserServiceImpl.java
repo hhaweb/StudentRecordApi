@@ -1,4 +1,4 @@
-package com.student.service.user;
+package com.student.service.impl;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -12,16 +12,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.student.config.ERole;
+import com.student.dto.UserDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.ResponseMessage;
-import com.student.dto.user.UserDto;
-import com.student.entity.user.Role;
-import com.student.entity.user.RoutePermission;
-import com.student.entity.user.User;
-import com.student.repository.user.PermissionRepository;
-import com.student.repository.user.RoleRepository;
-import com.student.repository.user.UserRepository;
-import com.student.repository.user.UserRoleRepository;
+import com.student.entity.Role;
+import com.student.entity.RoutePermission;
+import com.student.entity.User;
+import com.student.repository.PermissionRepository;
+import com.student.repository.RoleRepository;
+import com.student.repository.UserRepository;
+import com.student.repository.UserRoleRepository;
+import com.student.service.UserService;
 import com.student.util.CommonUtil;
 @Service
 public class UserServiceImpl implements UserService {
@@ -42,11 +43,10 @@ public class UserServiceImpl implements UserService {
 	private GenericResponse updateUser(UserDto userDto) {
 		User existingUser = userRepo.findById(userDto.getId()).orElse(null);
 		if(existingUser != null) {
-			User existingEmail = userRepo.findByEmail(userDto.getEmail()).orElse(null);
+			User existingEmail = userRepo.findByUserName(userDto.getUserName()).orElse(null);
 			if(existingEmail != null && existingEmail.getId() != userDto.getId()) {
 				return new GenericResponse(false, "Error: Email already exist");
 			}
-			existingUser.setEmail(userDto.getEmail());
 			existingUser.setUserName(userDto.getUserName());
 			existingUser.setPassword(encoder.encode(existingUser.getPassword()));
 			existingUser.setUpdateDate(new Date());
@@ -100,14 +100,14 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public GenericResponse createUser(UserDto userDto) throws ParseException {
-		if(userDto.getEmail() == null) {
-			return new GenericResponse(false, "Error: Invalid email");
+		if(userDto.getUserName() == null) {
+			return new GenericResponse(false, "Error: Invalid user name");
 		}
 	
 		if(userDto.getId() == null) {
 			User user = userDto.getUser();
-			if (userRepo.existsByEmail(user.getEmail())) {
-				return new GenericResponse(false, "Error: Email already exist");
+			if (userRepo.existsByEmail(user.getUserName())) {
+				return new GenericResponse(false, "Error: User name already exist");
 			}		
 			String password = "";		
 			if(user.getPassword() == null) {

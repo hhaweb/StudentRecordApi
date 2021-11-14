@@ -1,4 +1,4 @@
-package com.student.entity.user;
+package com.student.entity;
 
 import java.io.Serializable;
 

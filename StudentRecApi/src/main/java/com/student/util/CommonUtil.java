@@ -10,17 +10,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import com.google.gson.reflect.TypeToken;
-import com.student.dto.system.Menus;
+import com.student.dto.Menus;
+import com.student.dto.UserDetailsImpl;
 import com.google.gson.Gson;
 
 import java.util.Scanner;
 @Component
 public class CommonUtil {
 	
-	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+	private static final Logger logger = LoggerFactory.getLogger(CommonUtil.class);
 	@Autowired
 	ResourceLoader resourceLoader;
 	
@@ -54,6 +56,11 @@ public class CommonUtil {
 	}
 	
 
+	public UserDetailsImpl getCurrentLoginUser() {
+		UserDetailsImpl userDetails = (UserDetailsImpl)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return userDetails;
+	}
+	
 	public static String getPasswordStrength(int length) {
 		if(length < 5) {
 			return "weak";

@@ -23,19 +23,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.student.config.ERole;
+import com.student.dto.ConfigData;
+import com.student.dto.LoginModel;
+import com.student.dto.MenuItem;
+import com.student.dto.Menus;
+import com.student.dto.UserDetailsImpl;
+import com.student.dto.UserDto;
 import com.student.dto.common.GenericResponse;
+import com.student.dto.common.JwtResponse;
 import com.student.dto.common.ResponseMessage;
-import com.student.dto.system.ConfigData;
-import com.student.dto.system.MenuItem;
-import com.student.dto.system.Menus;
-import com.student.dto.user.JwtResponse;
-import com.student.dto.user.LoginModel;
-import com.student.dto.user.UserDetailsImpl;
-import com.student.dto.user.UserDto;
-import com.student.entity.user.RoutePermission;
-import com.student.entity.user.User;
-import com.student.repository.user.UserRepository;
-import com.student.service.user.UserService;
+import com.student.entity.RoutePermission;
+import com.student.entity.User;
+import com.student.repository.UserRepository;
+import com.student.service.UserService;
 import com.student.util.CommonUtil;
 import com.student.util.JwtUtils;
 
@@ -63,11 +63,10 @@ public class AuthController {
 		
 	try {
 		 authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+				new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
 	}catch(Exception e) {
 		e.printStackTrace();
 	}
-		
 
 		SecurityContextHolder.getContext().setAuthentication(authentication); // to save login user authencation info
 		
@@ -80,8 +79,7 @@ public class AuthController {
 		
 		return ResponseEntity.ok(new JwtResponse(jwt, 
 												 userDetails.getId(), 
-												 userDetails.getUsername(), 
-												 userDetails.getEmail(),
+												 userDetails.getUsername(),
 												 roles,
 												 menu
 												 ));

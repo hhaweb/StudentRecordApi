@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.student.service.user.UserDetailsServiceImpl;
+import com.student.service.impl.UserDetailsServiceImpl;
 import com.student.util.JwtUtils;
 
 

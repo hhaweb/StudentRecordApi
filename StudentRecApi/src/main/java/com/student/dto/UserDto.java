@@ -1,4 +1,4 @@
-package com.student.dto.user;
+package com.student.dto;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -9,8 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
-import com.student.entity.user.User;
+import com.student.entity.User;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,6 @@ import lombok.Setter;
 public class UserDto {
 	private Long id;
 	private String userName;
-	private String email;
 	private String createDate;
 	private String updateDate;
 	private String password;
@@ -41,7 +39,6 @@ public class UserDto {
 		}
 		
 		user.setUserName(this.userName);
-		user.setEmail(this.email);
 		return user;
 		
 	}

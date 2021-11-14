@@ -27,8 +27,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import com.student.service.impl.UserDetailsServiceImpl;
+
 import org.slf4j.Logger;
-import com.student.service.user.UserDetailsServiceImpl;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -88,9 +89,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				// Swagger endpoints must be publicly accessible
 				.antMatchers("/").permitAll()
 				// Our public endpoints
-				.antMatchers("/api/auth/login").permitAll()
+				.antMatchers("/api/auth/**").permitAll()
 				// Our private endpoints
-				.antMatchers("/api/auth/signup").access("hasRole('ROLE_SUPER_ADMIN')")
+				 .antMatchers("/api/auth/signup").access("hasRole('ROLE_SUPER_ADMIN')")
+				 .antMatchers("/api/upload/**").access("hasRole('ROLE_SUPER_ADMIN')")
 				.anyRequest().authenticated();
 
 		// Add JWT token filter

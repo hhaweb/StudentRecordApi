@@ -1,4 +1,4 @@
-package com.student.entity.user;
+package com.student.entity;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -46,13 +46,10 @@ public class User implements Serializable{
 	private Long id;
 
 	@NotBlank
-	@Size(max = 120)
 	@Column(name = "user_name")
 	private String userName;
-	
-	@NotBlank
-	@Size(max = 50)
-	@Email
+
+	@Column(name = "email")
 	private String email;
 	
 	@NotBlank
@@ -75,6 +72,16 @@ public class User implements Serializable{
 	public User() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public User(@NotBlank String userName, @NotBlank @Size(max = 120) String password, Date createDate, Date updateDate,
+			Set<Role> roles) {
+		super();
+		this.userName = userName;
+		this.password = password;
+		this.createDate = createDate;
+		this.updateDate = updateDate;
+		this.roles = roles;
 	}
 	
 	

@@ -1,11 +1,11 @@
-package com.student.service.user;
+package com.student.service;
 
 import java.text.ParseException;
 import java.util.List;
 
+import com.student.dto.UserDto;
 import com.student.dto.common.GenericResponse;
-import com.student.dto.user.UserDto;
-import com.student.entity.user.RoutePermission;
+import com.student.entity.RoutePermission;
 
 public interface UserService {
 	GenericResponse createUser(UserDto userDto) throws ParseException;
