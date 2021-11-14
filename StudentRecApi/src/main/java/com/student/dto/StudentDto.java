@@ -37,6 +37,7 @@ public class StudentDto {
 	@CsvBindByName(column = "Training")
 	private String training;
 	
+	@CsvBindByName(column = "Remark")
 	private String errorMessage;
 	
 	private boolean isHaveError;

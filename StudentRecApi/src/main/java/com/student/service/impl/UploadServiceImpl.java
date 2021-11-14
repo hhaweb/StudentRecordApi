@@ -1,7 +1,10 @@
 package com.student.service.impl;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,10 +22,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.HeaderColumnNameMappingStrategy;
+import com.opencsv.bean.HeaderColumnNameMappingStrategyBuilder;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.student.config.CSVConfig;
 import com.student.config.ERole;
 import com.student.config.ResponseMessage;
 import com.student.dto.StudentDto;
+import com.student.dto.UploadResultDto;
 import com.student.dto.UserDetailsImpl;
 import com.student.dto.common.GenericResponse;
 import com.student.entity.Role;
@@ -54,7 +64,7 @@ public class UploadServiceImpl implements UploadService {
 
 	@Autowired
 	private PasswordEncoder encoder;
-	
+
 	@Autowired
 	private UserRepository userRepo;
 
@@ -90,11 +100,14 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	private Long createUser(String userName, Set<Role> role) {
-		String password = commonUtil.generatePassword();
-		User user = new User(userName, encoder.encode(password), new Date(), new Date(), role);
-		User saveObj = userRepo.saveAndFlush(user);
-		return saveObj.getId();
-
+		User existingUser = userRepo.findByUserName(userName).orElse(null);
+		if (existingUser == null) {
+			String password = commonUtil.generatePassword();
+			User user = new User(userName, encoder.encode(password), new Date(), new Date(), role);
+			User saveObj = userRepo.saveAndFlush(user);
+			return saveObj.getId();
+		}
+		return existingUser.getId();
 	}
 
 	@Override
@@ -107,38 +120,54 @@ public class UploadServiceImpl implements UploadService {
 				return new GenericResponse(false, ResponseMessage.FILE_SAVE_ERROR);
 			}
 
-			List<StudentDto> studentCSVList = CSVHelper
-					.readStudentCSV(uploadPath + File.separator + id.toString() + ".csv");
+			String path = uploadPath + File.separator + id.toString() + ".csv";
+			String errroPath = uploadPath + File.separator + id.toString() + "_err.csv";
+
+			// read csv file
+			List<StudentDto> studentCSVList = new ArrayList<StudentDto>();
+			try {
+				studentCSVList = new CsvToBeanBuilder<StudentDto>(new FileReader(path)).withType(StudentDto.class)
+						.withIgnoreLeadingWhiteSpace(true).build().parse();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			List<StudentDto> errorList = new ArrayList<StudentDto>();
 			int successCount = 0;
 			int failCount = 0;
 			Role studentRole = roleRepo.findByName(ERole.ROLE_STUDENT).orElse(null);
 			Set<Role> roles = new HashSet<>();
 			roles.add(studentRole);
-			for (StudentDto student : studentCSVList) {
-				checkStudentCSVError(student);
-				if (student.isHaveError()) {
-					errorList.add(student);
-					failCount++;
-				} else {
-					Student saveObj = student.getEntity();
-					Long userId = createUser(saveObj.getName() + "-" + saveObj.getCid(), roles);
-					saveObj.setUserId(userId);
-					studentRepo.save(saveObj);
-					successCount++;
-				}
 
+			try {
+				CSVWriter csvWriter = new CSVWriter(new FileWriter(errroPath));
+				List<String> headerList = CSVConfig.StudentErrorCSVHeader;
+				String[] headers = (String[]) headerList.toArray();
+				for (StudentDto student : studentCSVList) {
+					checkStudentCSVError(student);
+					if (student.isHaveError()) {
+						if (failCount == 0) {
+							csvWriter.writeNext(headers);
+						}
+						csvWriter.writeNext(new String[] { student.getName(), student.getCid(), student.getDid(),
+								student.getMobileNo(), student.getGender(), student.getPermAddress(),
+								student.getAlternativeNo(), student.getTraining(), student.getErrorMessage() });
+						errorList.add(student);
+						failCount++;
+					} else {
+						Student saveObj = student.getEntity();
+						Long userId = createUser(saveObj.getName() + "-" + saveObj.getCid(), roles);
+						saveObj.setUserId(userId);
+						studentRepo.save(saveObj);
+						successCount++;
+					}
+				}
+				csvWriter.close();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			String message = "";
-			if(successCount > 0) {
-				message += successCount + " record uploaded successfully. ";
-			}
-			
-			if(failCount > 0) {
-				message += failCount + " record have error";
-			}
-			
-			return new GenericResponse(true, message, errorList);
+
+			return new GenericResponse(true, new UploadResultDto(0, successCount, failCount, successCount + failCount));
 
 		} else {
 			return new GenericResponse(false, ResponseMessage.INVALID_UPLOAD);

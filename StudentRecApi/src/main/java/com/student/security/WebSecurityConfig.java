@@ -89,7 +89,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				// Swagger endpoints must be publicly accessible
 				.antMatchers("/").permitAll()
 				// Our public endpoints
-				.antMatchers("/api/auth/**").permitAll()
+				.antMatchers("/api/auth/login").permitAll()
 				// Our private endpoints
 				 .antMatchers("/api/auth/signup").access("hasRole('ROLE_SUPER_ADMIN')")
 				 .antMatchers("/api/upload/**").access("hasRole('ROLE_SUPER_ADMIN')")

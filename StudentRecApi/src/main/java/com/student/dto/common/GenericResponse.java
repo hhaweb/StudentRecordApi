@@ -1,13 +1,27 @@
 package com.student.dto.common;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class GenericResponse {
 
-
+	private String id;
 	private boolean status;
 
 	private String message;
 
 	private Object payLoad;
+	
+
+	public GenericResponse(String id, boolean status, String message, Object payLoad) {
+		super();
+		this.id = id;
+		this.status = status;
+		this.message = message;
+		this.payLoad = payLoad;
+	}
 
 	public GenericResponse(boolean status, String message, Object payLoad) {
 		this.status = status;
@@ -26,31 +40,4 @@ public class GenericResponse {
 		this.status = status;
 		this.payLoad = payLoad;
 	}
-
-	public boolean isStatus() {
-		return status;
-	}
-
-	public void setStatus(boolean status) {
-		this.status = status;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public Object getPayLoad() {
-		return payLoad;
-	}
-
-	public void setPayLoad(Object payLoad) {
-		this.payLoad = payLoad;
-	}
-	
-	
-
 }

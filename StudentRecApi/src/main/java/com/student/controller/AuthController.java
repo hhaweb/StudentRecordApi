@@ -65,7 +65,7 @@ public class AuthController {
 		 authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
 	}catch(Exception e) {
-		e.printStackTrace();
+		return ResponseEntity.ok(new JwtResponse(false));
 	}
 
 		SecurityContextHolder.getContext().setAuthentication(authentication); // to save login user authencation info
@@ -77,7 +77,7 @@ public class AuthController {
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
 		
-		return ResponseEntity.ok(new JwtResponse(jwt, 
+		return ResponseEntity.ok(new JwtResponse(true, jwt, 
 												 userDetails.getId(), 
 												 userDetails.getUsername(),
 												 roles,

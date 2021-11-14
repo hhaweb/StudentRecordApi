@@ -15,14 +15,24 @@ public class JwtResponse {
 	private String userName;
 	private List<String> roles;
 	private List<Menus> menuList;
-	public JwtResponse(String token, Long id, String userName,List<String> roles, List<Menus> menuList) {
+	private boolean status;
+	
+	public JwtResponse(boolean status, String token, Long id, String userName,List<String> roles, List<Menus> menuList) {
 		super();
+		this.status = status;
 		this.token = token;
 		this.id = id;
 		this.userName = userName;
 		this.roles = roles;
 		this.menuList = menuList;
 	}
+
+	public JwtResponse(boolean status) {
+		super();
+		this.status = status;
+	}
+	
+	
 	
 	
 }
