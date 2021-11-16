@@ -1,30 +1,49 @@
 package com.student.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import com.google.gson.reflect.TypeToken;
+
 import com.student.dto.Menus;
 import com.student.dto.UserDetailsImpl;
 import com.google.gson.Gson;
 
 import java.util.Scanner;
+
+import javax.servlet.http.HttpServletResponse;
 @Component
 public class CommonUtil {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CommonUtil.class);
 	@Autowired
 	ResourceLoader resourceLoader;
+	
+	@Value("${upload.path}")
+	private String uploadPath;
+	
+	public void downloadFile(HttpServletResponse response, String fileName) throws IOException {
+		File file = new File(uploadPath+File.separator+fileName);
+		Path path = Paths.get(file.getAbsolutePath());
+		ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+		response.getOutputStream();
+	}
 	
 	public List<Menus> getMenuItem() {
 		Gson gson = new Gson();
