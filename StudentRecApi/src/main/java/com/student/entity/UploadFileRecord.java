@@ -29,18 +29,38 @@ public class UploadFileRecord {
 	@Column(name = "file_name")
 	private String fileName;
 	
+	@Column(name = "error_file_name")
+	private String errorFileName;
+	
+	@Column(name = "total_record")
+	private int totalRecord;
+	
+	@Column(name = "success_record")
+	private int successRecord;
+	
+	@Column(name = "fail_record")
+	private int failRecord;
+	
+	
 	@Column(name = "upload_date")
 	private Date uploadDate;
 	
 	@Column(name = "uploadBy")
 	private String uploadBy;
 
-	public UploadFileRecord(String fileName, Date uploadDate, String uploadBy) {
+	public UploadFileRecord(String fileName, String errorFileName, int totalRecord, int successRecord, int failRecord,
+			Date uploadDate, String uploadBy) {
 		super();
 		this.fileName = fileName;
+		this.errorFileName = errorFileName;
+		this.totalRecord = totalRecord;
+		this.successRecord = successRecord;
+		this.failRecord = failRecord;
 		this.uploadDate = uploadDate;
 		this.uploadBy = uploadBy;
 	}
+
+
 	
 	
 
