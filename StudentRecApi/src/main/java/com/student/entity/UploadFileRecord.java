@@ -41,7 +41,6 @@ public class UploadFileRecord {
 	@Column(name = "fail_record")
 	private int failRecord;
 	
-	
 	@Column(name = "upload_date")
 	private Date uploadDate;
 	

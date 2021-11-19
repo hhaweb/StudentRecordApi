@@ -72,8 +72,8 @@ public class UploadServiceImpl implements UploadService {
 	private String uploadPath;
 
 	private Long saveUploadFile(String fileName) {
-		UserDetailsImpl loginUser = commonUtil.getCurrentLoginUser();
-		UploadFileRecord uploadFileRecord = new UploadFileRecord(fileName, new Date(), loginUser.getUsername());
+		UserDetailsImpl loginUser = commonUtil.getCurrentLoginUser(); 
+		UploadFileRecord uploadFileRecord = new UploadFileRecord(fileName, "", 0, 0, 0, new Date(), loginUser.getUsername());
 		UploadFileRecord saveObj = uploadFileRepo.saveAndFlush(uploadFileRecord);
 		return saveObj.getId();
 	}
@@ -114,14 +114,14 @@ public class UploadServiceImpl implements UploadService {
 	public GenericResponse uploadStudentCSV(MultipartFile file) {
 		// TODO Auto-generated method stub
 		if (CSVHelper.validateCSVFile(file, CSVConfig.StudentCSVHeader)) {
-			Long id = saveUploadFile(file.getOriginalFilename());
-			Boolean checkFileSave = CSVHelper.saveFile(file, id.toString(), uploadPath);
+			Long uploadFileId = saveUploadFile(file.getOriginalFilename());
+			Boolean checkFileSave = CSVHelper.saveFile(file, uploadFileId.toString(), uploadPath);
 			if (!checkFileSave) {
 				return new GenericResponse(false, ResponseMessage.FILE_SAVE_ERROR);
 			}
 
-			String path = uploadPath + File.separator + id.toString() + ".csv";
-			String errroPath = uploadPath + File.separator + id.toString() + "_err.csv";
+			String path = uploadPath + File.separator + uploadFileId.toString() + ".csv";
+			String errroPath = uploadPath + File.separator + uploadFileId.toString() +  CSVConfig.errorFileName;
 
 			// read csv file
 			List<StudentDto> studentCSVList = new ArrayList<StudentDto>();
@@ -166,8 +166,16 @@ public class UploadServiceImpl implements UploadService {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
-			return new GenericResponse(true, new UploadResultDto(0, successCount, failCount, successCount + failCount));
+		UploadFileRecord existingUploadFileRecord =	uploadFileRepo.findById(uploadFileId).orElse(null);
+		if(existingUploadFileRecord != null) {
+			existingUploadFileRecord.setTotalRecord(successCount + failCount);
+			existingUploadFileRecord.setFailRecord(failCount);
+			existingUploadFileRecord.setSuccessRecord(successCount);
+			existingUploadFileRecord.setErrorFileName(uploadFileId.toString() +  CSVConfig.errorFileName);
+			uploadFileRepo.save(existingUploadFileRecord);
+		}
+			
+		return new GenericResponse(true, new UploadResultDto(0, successCount, failCount, successCount + failCount));
 
 		} else {
 			return new GenericResponse(false, ResponseMessage.INVALID_UPLOAD);
