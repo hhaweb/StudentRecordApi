@@ -99,7 +99,7 @@ public class UploadServiceImpl implements UploadService {
 		student.setHaveError(errorMessage == "" ? false : true);
 	}
 
-	private Long createUser(String userName, Set<Role> role) {
+	public Long createUser(String userName, Set<Role> role) {
 		User existingUser = userRepo.findByUserName(userName).orElse(null);
 		if (existingUser == null) {
 			String password = commonUtil.generatePassword();
