@@ -1,10 +1,12 @@
 package com.student.dto.common;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class GenericResponse {
 
 	private String id;
@@ -40,4 +42,14 @@ public class GenericResponse {
 		this.status = status;
 		this.payLoad = payLoad;
 	}
+
+	public GenericResponse(String id, boolean status, String message) {
+		super();
+		this.id = id;
+		this.status = status;
+		this.message = message;
+	}
+	
+	
+	
 }

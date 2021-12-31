@@ -1,59 +1,139 @@
 package com.student.dto;
-import java.util.Date;
 
-import com.opencsv.bean.CsvBindByName;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.student.config.ConfigData;
+import com.student.dto.csv.CourseCsvDto;
+import com.student.entity.Course;
 import com.student.entity.Student;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class StudentDto {
-	@CsvBindByName(column = "name")
+
+	private Long id;
 	private String name;
-	
-	@CsvBindByName(column = "cid")
 	private String cid;
-	
-	@CsvBindByName(column = "did")
 	private String did;
-	
-	@CsvBindByName(column = "mobile_no")
+	private String dateOfBirth;
+	private String email;
 	private String mobileNo;
-	
-	@CsvBindByName(column = "gender")
 	private String gender;
+	private String bloodGroup;
+	private String maritalStatus;
+	private String avatar;
+	private String status;
+
+	private String createdDate;
+	private String updatedDate;
+	private String deletedDate;
+	private String inDate;
+
+	private Integer batchNo;
+	private Integer trainingYear;
+	private Long totalRecord;
 	
+	private List<CourseDto> courseDtoList;
 	
-	@CsvBindByName(column = "perm_address")
-	private String permAddress;
-	
-	@CsvBindByName(column = "Alternative No.")
-	private String alternativeNo;
-	
-	
-	@CsvBindByName(column = "Training")
-	private String training;
-	
-	@CsvBindByName(column = "Remark")
-	private String errorMessage;
-	
-	private boolean isHaveError;
-	
-	private Long userId;
-	
-	public Student getEntity() {
+
+	public StudentDto(Student student) {
+		DateFormat df = new SimpleDateFormat();
+		if (student != null) {
+			this.id = student.getId();
+			this.name = student.getName();
+			this.cid = student.getCid();
+			this.did = student.getDid();
+
+			this.email = student.getEmail();
+			this.mobileNo = student.getMobileNo();
+			this.gender = student.getGender();
+			this.bloodGroup = student.getBloodGroup();
+			this.maritalStatus = student.getMaritalStatus();
+			this.avatar = student.getAvatar();
+			this.status = student.getStatus();
+			this.batchNo = student.getBatchNo();
+			
+			this.courseDtoList = new ArrayList<CourseDto>();
+//			if(student.getCourseList() != null && student.getCourseList().size() > 0) {
+//				for (Course reg : student.getCourseList()) {
+//					this.courseDtoList.add(new CourseDto(reg));
+//				}
+//			}
+
+			if (student.getDateOfBirth() != null) {
+				this.dateOfBirth = df.format(student.getDateOfBirth());
+			}
+
+			if (student.getCreatedDate() != null) {
+				this.createdDate = df.format(student.getCreatedDate());
+			}
+
+			if (student.getUpdatedDate() != null) {
+				this.updatedDate = df.format(student.getUpdatedDate());
+			}
+
+			if (student.getDeletedDate() != null) {
+				this.deletedDate = df.format(student.getDeletedDate());
+			}
+
+			if (student.getTrainingYear() != 0) {
+				this.trainingYear = student.getTrainingYear();
+			}
+		}
+	}
+
+	@JsonIgnore
+	public Student getEntity() throws ParseException {
+		DateFormat df = new SimpleDateFormat(ConfigData.DateFormat);
+		DateFormat dfWithTime = new SimpleDateFormat(ConfigData.DateFormatWithTime);
+
 		Student student = new Student();
+
+		if (this.id != null && this.id != 0) {
+			student.setId(this.id);
+		}
+
+		student.setName(this.name);
 		student.setCid(this.cid);
 		student.setDid(this.did);
-		student.setName(this.name);
+		student.setEmail(this.email);
 		student.setMobileNo(this.mobileNo);
-		student.setGender(this.gender);		
-		student.setCreatedDate(new Date());
-		student.setUserId(this.userId);
+		student.setGender(this.gender);
+		student.setBloodGroup(this.bloodGroup);
+		student.setMaritalStatus(this.maritalStatus);
+		student.setAvatar(this.avatar);
+		student.setStatus(this.status);
+		student.setBatchNo(this.batchNo);
+
+		if (this.createdDate != null) {
+			student.setCreatedDate(dfWithTime.parse(this.createdDate));
+		}
+		if (this.updatedDate != null) {
+			student.setUpdatedDate(dfWithTime.parse(this.updatedDate));
+		}
+		if (this.deletedDate != null) {
+			student.setDeletedDate(dfWithTime.parse(this.deletedDate));
+		}
+		if (this.dateOfBirth != null) {
+			student.setDateOfBirth(df.parse(this.dateOfBirth));
+		}
+		if (this.trainingYear != null && this.trainingYear != 0) {
+			student.setTrainingYear(this.trainingYear);
+		}
+
 		return student;
-		
+
 	}
+
 }
