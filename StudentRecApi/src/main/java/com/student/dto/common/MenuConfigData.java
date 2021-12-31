@@ -1,4 +1,4 @@
-package com.student.dto;
+package com.student.dto.common;
 
 import java.io.Serializable;
 import java.util.List;
@@ -11,12 +11,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ConfigData implements Serializable {
+public class MenuConfigData implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private List<Menus> menus;
-	private List<RoutePermission> routePermissions;
+	private List<String> routeList;
+	private String role;
+	private String userName;
+	private Long userId;
+	private Long studentId;
 
 }

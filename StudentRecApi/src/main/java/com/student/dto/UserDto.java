@@ -8,7 +8,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.student.entity.User;
 
 import lombok.Getter;
@@ -23,9 +25,12 @@ public class UserDto {
 	private String createDate;
 	private String updateDate;
 	private String password;
-	private List<String> role;
+	private Long roleId;
+	private Long totalRecord;
+	private String roleName;
 	
-	public User getUser() throws ParseException {
+	@JsonIgnore
+	public User getEntity() throws ParseException {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		User user = new User();
 		if(this.id != null) { // edit user
@@ -40,6 +45,29 @@ public class UserDto {
 		
 		user.setUserName(this.userName);
 		return user;
-		
 	}
+	
+	public UserDto(User user) {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		this.id = user.getId();
+		this.userName = user.getUserName();
+		this.createDate = user.getCreateDate() != null ? df.format(user.getCreateDate()) : null;
+		this.updateDate = user.getUpdateDate() != null ? df.format(user.getUpdateDate()) : null;
+		this.roleName = user.getRole().getName().toString();
+		this.roleId = user.getRole().getId();
+	}
+
+	
+	public UserDto(UserDetailsImpl userDetail) {
+		this.id = userDetail.getId();
+		this.userName = userDetail.getUsername();
+		this.roleName = userDetail.getAuthorities().stream()
+				.map(item -> item.getAuthority())
+				.collect(Collectors.toList()).get(0);
+	}
+	
+	
+	
+	
+	
 }

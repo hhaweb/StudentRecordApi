@@ -6,17 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -32,7 +21,7 @@ import javax.persistence.*;
 @Entity
 @Table(	name = "user", 
 		uniqueConstraints = {
-			@UniqueConstraint(columnNames = "email") 
+			@UniqueConstraint(columnNames = "user_name") 
 		})
 public class User implements Serializable{
 
@@ -63,27 +52,25 @@ public class User implements Serializable{
 	@Column(name = "update_date")
 	private Date updateDate;
 	
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(	name = "user_role", 
-				joinColumns = @JoinColumn(name = "user_id"), 
-				inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles = new HashSet<>();
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name="role_id")
+	private Role role;
 
 	public User() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public User(@NotBlank String userName, @NotBlank @Size(max = 120) String password, Date createDate, Date updateDate,
-			Set<Role> roles) {
+	public User( @NotBlank String userName, String email, @NotBlank @Size(max = 120) String password,
+			Date createDate, Date updateDate, Role role) {
 		super();
 		this.userName = userName;
+		if(email != null && !email.isEmpty()) {
+			this.email = email;
+		}
 		this.password = password;
 		this.createDate = createDate;
 		this.updateDate = updateDate;
-		this.roles = roles;
+		this.role = role;
 	}
-	
-	
-	
 }

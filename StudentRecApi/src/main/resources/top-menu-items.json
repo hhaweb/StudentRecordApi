@@ -13,10 +13,56 @@
 		]
 	},
 	{
-		"label": "Upload",
+		"label": "Trainer",
 		"icon": "pi pi-users",
-		"routerLink": [
-			"/upload/data-upload"
+		"items": [
+			{
+				"label": "Trainer List",
+				"icon": "pi pi-fw pi-list",
+				"routerLink": [
+					"/trainer/trainer-list"
+				]
+			},
+			{
+				"label": "Add Trainer",
+				"icon": "pi pi-fw pi-list",
+				"routerLink": [
+					"/trainer/trainer-detail"
+				]
+			}
+		]
+	},
+	{
+		"label": "Course",
+		"icon": "pi pi-users",
+		"items": [
+			{
+				"label": "Course List",
+				"icon": "pi pi-fw pi-list",
+				"routerLink": [
+					"/course/course-list"
+				]
+			}
+		]
+	},
+	{
+		"label": "Upload",
+		"icon": "pi pi-cloud-upload",
+		"items": [
+			{
+				"label": "Upload Data",
+				"icon": "pi pi-fw pi-upload",
+				"routerLink": [
+					"/upload/data-upload"
+				]
+			},
+			{
+				"label": "Upload History",
+				"icon": "pi pi-fw pi-list",
+				"routerLink": [
+					"/upload/data-upload-history"
+				]
+			}
 		]
 	}
 ]

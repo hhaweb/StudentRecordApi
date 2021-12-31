@@ -46,9 +46,12 @@ public class UploadFileRecord {
 	
 	@Column(name = "uploadBy")
 	private String uploadBy;
+	
+	@Column(name = "upload_type")
+	private String uploadType;
 
 	public UploadFileRecord(String fileName, String errorFileName, int totalRecord, int successRecord, int failRecord,
-			Date uploadDate, String uploadBy) {
+			Date uploadDate, String uploadBy, String uploadType) {
 		super();
 		this.fileName = fileName;
 		this.errorFileName = errorFileName;
@@ -57,6 +60,7 @@ public class UploadFileRecord {
 		this.failRecord = failRecord;
 		this.uploadDate = uploadDate;
 		this.uploadBy = uploadBy;
+		this.uploadType = uploadType;
 	}
 
 

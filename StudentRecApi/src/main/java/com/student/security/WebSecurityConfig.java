@@ -91,8 +91,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				// Our public endpoints
 				.antMatchers("/api/auth/login").permitAll()
 				// Our private endpoints
-				 .antMatchers("/api/auth/signup").access("hasRole('ROLE_SUPER_ADMIN')")
+				 .antMatchers("/api/student/save-student").access("hasRole('ROLE_SUPER_ADMIN')")
+				 .antMatchers("/api/trainer/save-trainer").access("hasRole('ROLE_SUPER_ADMIN')")
+				 .antMatchers("/api/course/save-course").access("hasRole('ROLE_SUPER_ADMIN')")
 				 .antMatchers("/api/upload/**").access("hasRole('ROLE_SUPER_ADMIN')")
+				 
 				.anyRequest().authenticated();
 
 		// Add JWT token filter

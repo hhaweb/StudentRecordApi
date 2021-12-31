@@ -8,6 +8,6 @@ import com.student.config.ERole;
 import com.student.entity.Role;
 
 
-public interface RoleRepository extends JpaRepository<Role, Integer>{
+public interface RoleRepository extends JpaRepository<Role, Long>{
 	Optional<Role> findByName(ERole roleUser);
 }
