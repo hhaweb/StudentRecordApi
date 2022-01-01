@@ -62,7 +62,7 @@ public class StudentController {
 			StudentCsvDto studentCsvDto = new StudentCsvDto(studentDto);
 			studentCsvLisr.add(studentCsvDto);
 		}
-		CSVHelper.exportStudentLisr(response, studentCsvLisr);
+		CSVHelper.exportStudentList(response, studentCsvLisr);
 	} 
 
 }

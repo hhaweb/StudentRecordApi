@@ -93,9 +93,11 @@ public class Student implements Serializable{
 	private Long employmentTypeId;
 	
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="user_id")
+	@JoinColumn(name="system_user_id")
 	private User user;
 
+	@Column(name = "user_id")
+	private Long userId;
 	
 	@Column(name = "training_center_id")
 	private Long trainingCenterId;

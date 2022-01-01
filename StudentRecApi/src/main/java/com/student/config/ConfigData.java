@@ -8,16 +8,26 @@ public class ConfigData {
 			"email", "mobile_no", "gender", "blood_group", "marital_status", "employment_type_id", "avatar", "status",
 			"user_id", "training_center_id", "created_at", "updated_at", "deleted_at", "batch_no", "training_year");
 
-	public static final List<String> StudentErrorCSVHeader = Arrays.asList("id", "name", "cid", "did", "date_of_birth",
+	public static final List<String> StudentCSVHeaderError = Arrays.asList("id", "name", "cid", "did", "date_of_birth",
 			"email", "mobile_no", "gender", "blood_group", "marital_status", "employment_type_id", "avatar", "status",
 			"user_id", "training_center_id", "created_at", "updated_at", "deleted_at", "batch_no", "training_year",
 			"Remark");
 
-	public static final List<String> CourseCSVHeader = Arrays.asList("id", "status", "sector", "course_level",
-			"duration", "start_date", "end_date", "cohort_size", "number_of_applicants", "batch_no",
-			"training_location", "trainer_id", "student_id");
+	public static final List<String> CourseCSVHeader = Arrays.asList("Course ID", "Course Name", "Course Status", "Industrial Sector",
+			"Course Level", "Duration", "Start Date", "End Date", "Cohort Size Male", "Cohort Size Female",
+			"Number of Applicants Male", "Number of Applicants Female", "No. of Students Certified Male","No. of Students Certified Female","Batch Number","Training Location",
+			"Trainer ID","Student Name","CID","DID");
+	
+	public static final List<String> CourseCSVHeaderError = Arrays.asList("Course ID", "Course Name", "Course Status", "Industrial Sector",
+			"Course Level", "Duration", "Start Date", "End Date", "Cohort Size Male", "Cohort Size Female",
+			"Number of Applicants Male", "Number of Applicants Female", "No. of Students Certified Male","No. of Students Certified Female","Batch Number","Training Location",
+			"Trainer ID","Student Name","CID","DID","Remark");
 
-	public static final List<String> TrainerCSVHeader = Arrays.asList("id", "name", "nationality", "affiliation");
+	public static final List<String> TrainerCSVHeader = Arrays.asList("Trainer ID", "Trainer Name", "Sex", "Country","Date of Joining","Designation","Department",
+			"Branch/ Area of Expertise","DSP Centre","Training Programme","Trainer Affiliation","Qualification");
+	
+	public static final List<String> TrainerCSVHeaderError = Arrays.asList("Trainer ID", "Trainer Name", "Sex", "Country","Date of Joining","Designation","Department",
+			"Branch/ Area of Expertise","DSP Centre","Training Programme","Trainer Affiliation","Qualification","Remark");
 
 	public static final String errorFileName = "_error.csv";
 

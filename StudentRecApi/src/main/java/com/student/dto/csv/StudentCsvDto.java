@@ -116,6 +116,9 @@ public class StudentCsvDto {
 		if (!CSVHelper.isNumeric(this.id)) {
 			student.setUser(user);
 		}
+		if (CSVHelper.isNumeric(this.userId)) {
+			student.setTrainingCenterId(Long.parseLong(this.userId));
+		}
 		if (CSVHelper.isNumeric(this.trainingCenterId)) {
 			student.setTrainingCenterId(Long.parseLong(this.trainingCenterId));
 		}

@@ -39,6 +39,7 @@ public class StudentDto {
 	private String updatedDate;
 	private String deletedDate;
 	private String inDate;
+	private Long userId; 
 
 	private Integer batchNo;
 	private Integer trainingYear;
@@ -63,13 +64,7 @@ public class StudentDto {
 			this.avatar = student.getAvatar();
 			this.status = student.getStatus();
 			this.batchNo = student.getBatchNo();
-			
-			this.courseDtoList = new ArrayList<CourseDto>();
-//			if(student.getCourseList() != null && student.getCourseList().size() > 0) {
-//				for (Course reg : student.getCourseList()) {
-//					this.courseDtoList.add(new CourseDto(reg));
-//				}
-//			}
+			this.userId = student.getUserId();
 
 			if (student.getDateOfBirth() != null) {
 				this.dateOfBirth = df.format(student.getDateOfBirth());
@@ -115,6 +110,7 @@ public class StudentDto {
 		student.setAvatar(this.avatar);
 		student.setStatus(this.status);
 		student.setBatchNo(this.batchNo);
+		student.setUserId(this.userId);
 
 		if (this.createdDate != null) {
 			student.setCreatedDate(dfWithTime.parse(this.createdDate));

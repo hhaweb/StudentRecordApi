@@ -1,5 +1,6 @@
 package com.student.entity;
 
+import java.io.Serializable;
 import java.time.Year;
 import java.util.Date;
 
@@ -15,12 +16,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "upload_file_record")
+@Table(name = "upload_history")
 @Getter
 @Setter
 @NoArgsConstructor
-public class UploadFileRecord {
+public class UploadHistory implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -28,9 +34,6 @@ public class UploadFileRecord {
 	
 	@Column(name = "file_name")
 	private String fileName;
-	
-	@Column(name = "error_file_name")
-	private String errorFileName;
 	
 	@Column(name = "total_record")
 	private int totalRecord;
@@ -50,11 +53,10 @@ public class UploadFileRecord {
 	@Column(name = "upload_type")
 	private String uploadType;
 
-	public UploadFileRecord(String fileName, String errorFileName, int totalRecord, int successRecord, int failRecord,
+	public UploadHistory(String fileName, int totalRecord, int successRecord, int failRecord,
 			Date uploadDate, String uploadBy, String uploadType) {
 		super();
 		this.fileName = fileName;
-		this.errorFileName = errorFileName;
 		this.totalRecord = totalRecord;
 		this.successRecord = successRecord;
 		this.failRecord = failRecord;

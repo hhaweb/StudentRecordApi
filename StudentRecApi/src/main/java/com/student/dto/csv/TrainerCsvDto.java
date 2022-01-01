@@ -71,11 +71,11 @@ public class TrainerCsvDto {
 		trainer.setCreatedDate(new Date());
 		trainer.setUpdatedDate(new Date());
 
-		if(!this.trainerName.equalsIgnoreCase("NULL")) {
+		if(!this.trainerId.equalsIgnoreCase("NULL") && !this.trainerId.isEmpty()) {
 			trainer.setTrainerId(this.trainerId);
 		}
 
-		if(!this.trainerName.equalsIgnoreCase("NULL")) {
+		if(!this.trainerName.equalsIgnoreCase("NULL") && !this.trainerName.isEmpty()) {
 			trainer.setTrainerName(this.trainerName);		
 		}
 		
@@ -83,11 +83,11 @@ public class TrainerCsvDto {
 			trainer.setGender(this.gender);
 		}
 		
-		if(!this.joinDate.equalsIgnoreCase("NULL")) {
+		if(!this.joinDate.equalsIgnoreCase("NULL") && !this.joinDate.isEmpty()) {
 			trainer.setJoinDate(df.parse(this.joinDate));
 		}
 		
-		if(!this.designation.equalsIgnoreCase("NULL")) {
+		if(!this.designation.equalsIgnoreCase("NULL") && !this.designation.isEmpty()) {
 			trainer.setDesignation(this.designation);
 		}
 		

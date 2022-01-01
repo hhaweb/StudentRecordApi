@@ -5,18 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,14 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.student.config.ConfigData;
-import com.student.dto.UploadFileRecordDto;
-import com.student.dto.UploadResultDto;
+import com.student.dto.UploadHistoryDto;
 import com.student.dto.common.GenericResponse;
-import com.student.dto.common.MenuConfigData;
-import com.student.dto.csv.StudentCsvDto;
-import com.student.entity.UploadFileRecord;
+import com.student.entity.UploadHistory;
 import com.student.service.UploadService;
-import com.student.util.CSVHelper;
 
 @CrossOrigin("*")
 @RestController
@@ -57,18 +46,20 @@ public class UploadController {
 	}
 
 	@RequestMapping(path = "/download-uploadFile", method = RequestMethod.GET)
-	public ResponseEntity download(@RequestParam("fileId") String id) throws IOException {
+	public ResponseEntity download(@RequestParam("fileId") String id,@RequestParam("type") String type) throws IOException {
 		HttpHeaders header = new HttpHeaders();
 		ByteArrayResource resource = null;
 		try {
-			UploadFileRecord uploadFileRecord = uploadService.getUploadFileRecordById(Long.parseLong(id));
-
-			File file = new File(uploadPath + File.separator + uploadFileRecord.getId() + ".csv");
+			UploadHistoryDto uploadFileRecord = uploadService.getUploadHistoryById(Long.parseLong(id));
+			String fileName = type.equalsIgnoreCase("error") ? uploadFileRecord.getId()+ConfigData.errorFileName : uploadFileRecord.getId()+".csv";
+			String displayFileName = type.equalsIgnoreCase("error") ? uploadFileRecord.getErrorFileName() : uploadFileRecord.getFileName();
+			
+			File file = new File(uploadPath + File.separator + fileName);
 			Path path = Paths.get(file.getAbsolutePath());
 			resource = new ByteArrayResource(Files.readAllBytes(path));
 
 			header.set(HttpHeaders.CONTENT_DISPOSITION,
-					"attachment; filename=" + uploadFileRecord.getFileName() + ConfigData.errorFileName);
+					"attachment; filename=" + displayFileName);
 			header.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
 		} catch (Exception e) {
 			return ResponseEntity.ok().headers(header).body(resource);
@@ -78,7 +69,7 @@ public class UploadController {
 	}
 
 	@GetMapping("get-upload-history")
-	public List<UploadFileRecordDto> getUploadHistory() {
+	public List<UploadHistoryDto> getUploadHistory() {
 		return uploadService.getUploadHistory();
 
 	}

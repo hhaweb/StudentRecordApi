@@ -18,7 +18,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 	List<Course> getCourseByPager(@Param("courseId") String courseId, @Param("courseName") String courseName,
 			Pageable page);
 	
-	@Query(value = "select c.courseId,c.courseName, c.status, c.courseLevel, c.startDate, c.endDate,c.cohortSizeMale,c.cohortSizeFemale,c.batchNo,"
-			+ "c.trainingLoaction from Course c group by c.courseId  ")
+	@Query(value = "select courseId from Course c  ")
 	List<Course> getCourseByPagerWithoutFilter(Pageable page);
 }

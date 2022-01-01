@@ -19,8 +19,8 @@ public class UploadResultDto {
 	private int failCount;
 	private int totalCount;
 	private String uploadType;
-	private List<StudentCsvDto> studentErrorList;
-	private List<CourseCsvDto> courseErrorList;
-	private List<TrainerCsvDto> trainerErrorList;
+//	private List<StudentCsvDto> studentErrorList;
+//	private List<CourseCsvDto> courseErrorList;
+//	private List<TrainerCsvDto> trainerErrorList;
 	
 }

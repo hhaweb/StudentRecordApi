@@ -137,13 +137,13 @@ public class CSVHelper {
 		return items.size() > 0 ? true : false;
 	}
 
-	public static void exportStudentLisr(HttpServletResponse response, List<StudentCsvDto> studentList) {
+	public static void exportStudentList(HttpServletResponse response, List<StudentCsvDto> studentList) {
 		Date date = new Date();
 		String fileName = "student_"+df.format(date)+".csv";
 		response.setContentType("text/csv");
 		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName);
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
-		List<String> headerList = ConfigData.StudentErrorCSVHeader;
+		List<String> headerList = ConfigData.StudentCSVHeaderError;
 		CSVWriter csvWriter;
 		try {
 			csvWriter = new CSVWriter(response.getWriter());
