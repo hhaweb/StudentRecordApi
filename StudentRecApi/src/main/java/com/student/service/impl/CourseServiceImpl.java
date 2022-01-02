@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.student.config.ResponseMessage;
 import com.student.dto.CourseDto;
+import com.student.dto.CourseModel;
 import com.student.dto.TrainerDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
@@ -56,29 +57,51 @@ public class CourseServiceImpl implements CourseService {
 	}
 
 	@Override
-	public List<CourseDto> getCourseListWithPager(SearchDto searchDto) {
-		List<CourseDto> courseDtoList = new ArrayList<CourseDto>();
+	public List<CourseModel> getCourseListWithPager(SearchDto searchDto) {
+
 		int pageNo = searchDto.getRowOffset();
 		int pageSize = searchDto.getRowsPerPage();
 		String sortBy = searchDto.getSortName();
 		Pageable paging = PageRequest.of(pageNo, pageSize,
 				searchDto.getSortType() == 1 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending());
-		List<Course> courseList = new ArrayList<Course>();
+		List<CourseModel> courseList = new ArrayList<CourseModel>();
 		if (searchDto.getSearchKeyword() != null && !searchDto.getSearchKeyword().isEmpty()) {
 			courseList = courseRepo.getCourseByPager(searchDto.searchKeyword, searchDto.searchKeyword, paging);
 		} else {
 			courseList = courseRepo.getCourseByPagerWithoutFilter(paging);
 		}
+		
+		if(courseList.size() > 0) {
+			Long totalRecords = courseRepo.getTotalRecordGroupBy(searchDto.searchKeyword, searchDto.searchKeyword);
+			courseList.get(0).setTotalRecords(totalRecords);
+		}
+		return courseList;
+	}
 
-		if (courseList.size() > 0) {
+	@Override
+	public List<CourseDto> getCourseByCid(String cId) {
+		List<CourseDto> courseDtoList = new ArrayList<CourseDto>();
+		List<Course> courseList = courseRepo.findBycId(cId);
+		if(courseList != null && courseList.size() > 0) {
 			for (Course course : courseList) {
 				courseDtoList.add(new CourseDto(course));
 			}
-			courseDtoList.get(0).setTotalRecords(courseRepo.getTotalRecord());
-			;
 		}
-
 		return courseDtoList;
+	}
+
+	@Override
+	public List<CourseModel> getRecommendedCourses(String cid) {
+		List<Course> courseList = courseRepo.findBycId(cid);
+		List<String> courseIdList = new ArrayList<String>();
+		List<String> sectorList = new ArrayList<String>();
+		for (Course course : courseList) {
+			courseIdList.add(course.getCourseId());
+			sectorList.add(course.getSector());
+		}
+		
+		List<CourseModel> recommendedCourses = courseRepo.getRecommendCourses(courseIdList,sectorList) ;
+		return recommendedCourses;
 	}
 
 }

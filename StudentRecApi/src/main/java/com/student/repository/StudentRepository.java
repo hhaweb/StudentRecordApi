@@ -2,13 +2,16 @@ package com.student.repository;
 
 
 import java.security.cert.PKIXRevocationChecker.Option;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.student.entity.Student;
+import com.student.entity.Trainer;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
@@ -31,5 +34,11 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 	Long getTotalRecord();
 	
 	Optional<Student> findByUserId(Long userId);
+	
+	@Query(value = "select s from Student s where s.id =:id or s.name like %:name%")
+	List<Student> getStudentByPager(@Param("id") Long id, @Param("name") String studentName,  Pageable page);
+	
+	@Query(value = "select s from Student s where s.cid in (select c.cId from Course c where c.courseId=:courseId ) ")
+	List<Student> getStudentByCourseId(@Param("courseId") String courseId);
 
 }

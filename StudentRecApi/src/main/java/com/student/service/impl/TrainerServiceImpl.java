@@ -47,7 +47,7 @@ public class TrainerServiceImpl implements TrainerService{
 			trainerList = trainerRepo.findAll(paging).toList();
 		}
 
-		if (trainerList.size() > 0) {
+		if (trainerList != null && trainerList.size() > 0) {
 			for (Trainer trainer : trainerList) {
 				trainerDtoList.add(new TrainerDto(trainer));
 			}

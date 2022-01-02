@@ -58,10 +58,12 @@ public class StudentServiceImpl implements StudentService {
 		Pageable paging = PageRequest.of(pageNo, pageSize,
 				searchDto.getSortType() == 1 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending());
 		List<Student> studentList = new ArrayList<Student>();
-		if (searchDto.getSearchKeyword() != null && CSVHelper.isNumeric(searchDto.getSearchKeyword())) {
-			Long id = Long.parseLong(searchDto.getSearchKeyword());
-			Student student = studentRepo.findById(id).orElse(null);
-			studentList.add(student);
+		Long id = null;
+		if (searchDto.getSearchKeyword() != null) {
+			if(CSVHelper.isNumeric(searchDto.getSearchKeyword())) {
+				 id = Long.parseLong(searchDto.getSearchKeyword());
+			}
+			studentList = studentRepo.getStudentByPager(id,searchDto.getSearchKeyword(),paging);
 		} else {
 			studentList = studentRepo.findAll(paging).toList();
 		}
@@ -134,6 +136,19 @@ public class StudentServiceImpl implements StudentService {
 			studentDto = new StudentDto(student);
 		}
 		return studentDto;
+	}
+
+	@Override
+	public List<StudentDto> getStudentByCourseId(String courseId) {
+		// TODO Auto-generated method stub
+		 List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
+		List<Student> studentList = studentRepo.getStudentByCourseId(courseId);
+		if (studentList != null && studentList.size() > 0) {
+			for (Student student : studentList) {
+				studentDtoList.add(new StudentDto(student));
+			}
+		}
+		return studentDtoList;
 	}
 
 }

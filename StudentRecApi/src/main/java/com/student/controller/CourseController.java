@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.student.config.ResponseMessage;
 import com.student.dto.CourseDto;
+import com.student.dto.CourseModel;
 import com.student.dto.StudentDto;
 import com.student.dto.TrainerDto;
 import com.student.dto.common.GenericResponse;
@@ -55,11 +56,23 @@ public class CourseController {
 	}
 	
 	@PostMapping("/get-course-list")
-	public List<CourseDto> getCourseList(@Valid @RequestBody SearchDto search) {
+	public List<CourseModel> getCourseList(@Valid @RequestBody SearchDto search) {
+		
+		List<CourseModel> courseDtoList = new ArrayList<CourseModel>();
+		try {
+			courseDtoList = courseService.getCourseListWithPager(search);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return courseDtoList;
+	}
+	
+	@GetMapping("/get-courses-by-cid")
+	public List<CourseDto> getCoursesBycId(@RequestParam("cId") String cId) {
 		
 		List<CourseDto> courseDtoList = new ArrayList<CourseDto>();
 		try {
-			courseDtoList = courseService.getCourseListWithPager(search);
+			courseDtoList = courseService.getCourseByCid(cId);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -102,6 +115,18 @@ public class CourseController {
 		}
 		return response;
 		
+	}
+	
+	@GetMapping("/get-recommend-courses")
+	public List<CourseModel> getRecommendedCourses(@RequestParam("cid") String cid) {
+		
+		List<CourseModel> courseDtoList = new ArrayList<CourseModel>();
+		try {
+			courseDtoList = courseService.getRecommendedCourses(cid);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return courseDtoList;
 	}
 	
 	

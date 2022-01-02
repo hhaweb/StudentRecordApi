@@ -37,6 +37,14 @@ public class StudentController {
 		return studentDto;
 
 	}
+	
+	@GetMapping("/get-student-by-courseId")
+	public List<StudentDto> getStudentByCourseId(@RequestParam("courseId") String courseId) {
+		List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
+		studentDtoList = studentService.getStudentByCourseId(courseId);
+		return studentDtoList;
+
+	}
 
 	@PostMapping("/get-student-list")
 	public List<StudentDto> getStudentListWithPager(@Valid @RequestBody SearchDto search) {
@@ -65,4 +73,5 @@ public class StudentController {
 		CSVHelper.exportStudentList(response, studentCsvLisr);
 	} 
 
+	
 }

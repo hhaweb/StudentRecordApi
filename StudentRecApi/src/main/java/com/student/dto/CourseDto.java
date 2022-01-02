@@ -88,6 +88,7 @@ public class CourseDto {
 		if(course != null) {
 			DateFormat df = new SimpleDateFormat(ConfigData.DateFormat);
 			this.id = course.getId();
+			this.courseId = course.getCourseId();
 			this.courseName = course.getCourseName();
 			this.status = course.getStatus();
 			this.sector = course.getSector();
