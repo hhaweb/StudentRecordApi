@@ -91,8 +91,8 @@ public class UploadServiceImpl implements UploadService {
 	/* Student Upload */
 	private Long saveUploadFile(String fileName, String type) {
 		UserDetailsImpl loginUser = commonUtil.getCurrentLoginUser();
-		UploadHistory uploadFileRecord = new UploadHistory(fileName, 0, 0, 0,
-				new Date(), loginUser.getUsername(), type);
+		UploadHistory uploadFileRecord = new UploadHistory(fileName, 0, 0, 0, new Date(), loginUser.getUsername(),
+				type);
 		UploadHistory saveObj = uploadFileRepo.saveAndFlush(uploadFileRecord);
 		return saveObj.getId();
 	}
@@ -101,6 +101,13 @@ public class UploadServiceImpl implements UploadService {
 		String errorMessage = "";
 
 		// for empty check
+		if (student.getId() == null || student.getId().isEmpty()) {
+			errorMessage += ", id is empty";
+
+		} else if (!CSVHelper.isNumeric(student.getId())) {
+			errorMessage += ", invalid id";
+		}
+
 		if (student.getCid() == null) {
 			errorMessage += "cid is empty";
 		}
@@ -131,22 +138,26 @@ public class UploadServiceImpl implements UploadService {
 //		}
 
 		// for already exit check
-		if (studentRepo.isExistCidNumber(student.getCid())) { // for update check
-//			if (studentRepo.isExistStudent(Long.parseLong(student.getId()))) {
-//
-//				errorMessage += ", id does not exist";
-//			}
-			if (studentRepo.isExistCidNumberById(student.getCid(), Long.parseLong(student.getId()))) {
-				errorMessage += ", cid is already exist";
-			}
+		if (errorMessage != "") {
+			if (studentRepo.isExistCidNumber(student.getCid()) && CSVHelper.isNumeric(student.getId())) { // for update
+																											// check
+				if (studentRepo.isExistStudent(Long.parseLong(student.getId()))) {
+					errorMessage += ", id does not exist";
+				}
+				if (studentRepo.isExistCidNumberById(student.getCid(), Long.parseLong(student.getId()))) {
+					errorMessage += ", cid is already exist";
+				}
 
-			if (studentRepo.isExistDidNumberById(student.getDid(), Long.parseLong(student.getId()))) {
-				errorMessage += ", did is already exist";
-			}
-		} else { // for insert check
-
-			if (studentRepo.isExistDidNumber(student.getDid())) {
-				errorMessage += ", did is already exist";
+				if (studentRepo.isExistDidNumberById(student.getDid(), Long.parseLong(student.getId()))) {
+					errorMessage += ", did is already exist";
+				}
+			} else { // for insert check
+				if (studentRepo.isExistDidNumber(student.getDid())) {
+					errorMessage += ", did is already exist";
+				}
+				if (studentRepo.isExistCidNumber(student.getCid())) {
+					errorMessage += ", cid is already exist";
+				}
 			}
 		}
 
@@ -198,13 +209,11 @@ public class UploadServiceImpl implements UploadService {
 			errorMessage += ", invalid number of applicants male";
 		}
 
-		if (courseCsvDto.getCohortSizeFemale() != null
-				&& !CSVHelper.isNumeric(courseCsvDto.getCohortSizeFemale())) {
+		if (courseCsvDto.getCohortSizeFemale() != null && !CSVHelper.isNumeric(courseCsvDto.getCohortSizeFemale())) {
 			errorMessage += ", invalid cohort size female";
 		}
 
-		if (courseCsvDto.getCohortSizeMale()!= null
-				&& !CSVHelper.isNumeric(courseCsvDto.getCohortSizeMale())) {
+		if (courseCsvDto.getCohortSizeMale() != null && !CSVHelper.isNumeric(courseCsvDto.getCohortSizeMale())) {
 			errorMessage += ", invalid cohort size male";
 		}
 
@@ -219,13 +228,13 @@ public class UploadServiceImpl implements UploadService {
 		}
 		if (courseCsvDto.getStartDate() == null) {
 			errorMessage += ", start date is empty";
-		} else if(!CSVHelper.validateDateFormat(courseCsvDto.getStartDate(), ConfigData.DateFormat)) {
+		} else if (!CSVHelper.validateDateFormat(courseCsvDto.getStartDate(), ConfigData.DateFormat)) {
 			errorMessage += ", invalid created at date format";
 		}
-		
+
 		if (courseCsvDto.getEndDate() == null) {
 			errorMessage += ", end date is empty";
-		} else if(!CSVHelper.validateDateFormat(courseCsvDto.getEndDate(), ConfigData.DateFormat)) {
+		} else if (!CSVHelper.validateDateFormat(courseCsvDto.getEndDate(), ConfigData.DateFormat)) {
 			errorMessage += ", invalid end at date format";
 		}
 
@@ -235,13 +244,13 @@ public class UploadServiceImpl implements UploadService {
 			}
 		}
 
-		if (courseCsvDto.getCId() != null  && !courseCsvDto.getCId().isEmpty()) {
+		if (courseCsvDto.getCId() != null && !courseCsvDto.getCId().isEmpty()) {
 			if (!studentRepo.isExistCidNumber(courseCsvDto.getCId())) {
 				errorMessage += ", invalid CID";
 			}
 		}
 
-		if (courseCsvDto.getDId() != null  && !courseCsvDto.getDId().isEmpty()) {
+		if (courseCsvDto.getDId() != null && !courseCsvDto.getDId().isEmpty()) {
 			if (!studentRepo.isExistDidNumber(courseCsvDto.getDId())) {
 				errorMessage += ", invalid DID";
 			}
@@ -287,7 +296,7 @@ public class UploadServiceImpl implements UploadService {
 		if (tainerCsvDto.getTrainerId() == null || tainerCsvDto.getTrainerId().isEmpty()) {
 			errorMessage += "Trainer id is empty";
 		} else {
-			if(trainerRepo.isExistTrainerId(tainerCsvDto.getTrainerId())) {
+			if (trainerRepo.isExistTrainerId(tainerCsvDto.getTrainerId())) {
 				errorMessage += "Trainer id is already exist";
 			}
 		}
@@ -369,9 +378,8 @@ public class UploadServiceImpl implements UploadService {
 			Role studentRole = roleRepo.findByName(ERole.ROLE_STUDENT).orElse(null);
 
 			List<Student> saveStudentList = new ArrayList<Student>();
-			List<Student> updateStudentList = new ArrayList<Student>();
 			List<StudentCsvDto> errorList = new ArrayList<StudentCsvDto>();
-
+			List<User> saveUserList = new ArrayList<User>();
 			for (StudentCsvDto student : studentCSVList) {
 				checkStudentCSVError(student); // validate student csv file
 				if (student.isHaveError()) {
@@ -380,17 +388,26 @@ public class UploadServiceImpl implements UploadService {
 				} else { // insert student
 					Student saveObj;
 					try {
-						if (!CSVHelper.isNumeric(student.getId())) { // add to save list
-							String userName = student.getName() + "-" + student.getCid();
-							String password = commonUtil.generatePassword();
-							User user = new User(userName, student.getEmail(), encoder.encode(password), new Date(),
-									new Date(), studentRole);
-							saveObj = student.getEntity(user);
-							saveStudentList.add(saveObj);
-						} else { // add to update list
-							saveObj = student.getEntity(null);
-							updateStudentList.add(saveObj);
+						String userName = student.getName() + "-" + student.getCid();
+						saveObj = student.getEntity();
+						saveStudentList.add(saveObj);
+						if (!userRepo.existsByUserName(userName)) {
+							User user = new User(userName, student.getEmail(), null, new Date(), new Date(),
+									studentRole);
+							saveUserList.add(user);
 						}
+
+//						if (!CSVHelper.isNumeric(student.getId()) ) { // add to save list
+//							String userName = student.getName() + "-" + student.getCid();
+//							String password = commonUtil.generatePassword();
+//							User user = new User(userName, student.getEmail(), encoder.encode(password), new Date(),
+//									new Date(), studentRole);
+//							saveObj = student.getEntity(user);
+//							saveStudentList.add(saveObj);
+//						} else { // add to update list
+//							saveObj = student.getEntity(null);
+//							updateStudentList.add(saveObj);
+//						}
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -398,14 +415,17 @@ public class UploadServiceImpl implements UploadService {
 					successCount++;
 				}
 			}
-			if (updateStudentList.size() > 0) { // update
-				studentRepo.saveAll(updateStudentList);
-			}
+//			if (updateStudentList.size() > 0) { // update
+//				studentRepo.saveAll(updateStudentList);
+//			}
 
 			if (saveStudentList.size() > 0) { // insert
 				studentRepo.saveAll(saveStudentList);
 			}
 
+			if (saveUserList.size() > 0) {
+				userRepo.saveAll(saveUserList);
+			}
 			if (failCount > 0) { // create error csv file
 				String errroFilePath = uploadPath + File.separator + uploadFileId.toString() + ConfigData.errorFileName;
 				writeStudentCSVFile(errroFilePath, errorList);
@@ -477,7 +497,7 @@ public class UploadServiceImpl implements UploadService {
 				String errroFilePath = uploadPath + File.separator + uploadFileId.toString() + ConfigData.errorFileName;
 				writeCourseCSVFile(errroFilePath, errorList);
 			}
-			
+
 			UploadHistory existingUploadFileRecord = uploadFileRepo.findById(uploadFileId).orElse(null);
 			if (existingUploadFileRecord != null) {
 				existingUploadFileRecord.setTotalRecord(successCount + failCount);
@@ -485,7 +505,7 @@ public class UploadServiceImpl implements UploadService {
 				existingUploadFileRecord.setSuccessRecord(successCount);
 				uploadFileRepo.save(existingUploadFileRecord);
 			}
-			
+
 			UploadResultDto uploadResultDto = new UploadResultDto();
 			uploadResultDto.setTotalCount(successCount + failCount);
 			uploadResultDto.setFailCount(failCount);
@@ -546,11 +566,11 @@ public class UploadServiceImpl implements UploadService {
 			if (saveTrainerList.size() > 0) {
 				trainerRepo.saveAll(saveTrainerList);
 			}
-			if(errorList.size()>0) {
+			if (errorList.size() > 0) {
 				String errroFilePath = uploadPath + File.separator + uploadFileId.toString() + ConfigData.errorFileName;
 				writeTrainerCSVErrorFile(errroFilePath, errorList);
 			}
-			
+
 			UploadHistory existingUploadFileRecord = uploadFileRepo.findById(uploadFileId).orElse(null);
 			if (existingUploadFileRecord != null) {
 				existingUploadFileRecord.setTotalRecord(successCount + failCount);
@@ -588,7 +608,7 @@ public class UploadServiceImpl implements UploadService {
 	public UploadHistoryDto getUploadHistoryById(Long id) {
 		UploadHistoryDto uploadHistoryDto = null;
 		UploadHistory history = uploadFileRepo.findById(id).orElse(null);
-		if(history != null) {
+		if (history != null) {
 			uploadHistoryDto = new UploadHistoryDto(history);
 		}
 		return uploadHistoryDto;

@@ -15,14 +15,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.student.config.ERole;
+import com.student.dto.EmploymentDto;
 import com.student.dto.StudentDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
+import com.student.entity.Employment;
 import com.student.entity.Role;
 import com.student.entity.Student;
 import com.student.entity.User;
+import com.student.repository.CourseRepository;
+import com.student.repository.EmploymentRepository;
 import com.student.repository.RoleRepository;
 import com.student.repository.StudentRepository;
+import com.student.repository.UserRepository;
 import com.student.service.StudentService;
 import com.student.util.CSVHelper;
 import com.student.util.CommonUtil;
@@ -38,14 +43,30 @@ public class StudentServiceImpl implements StudentService {
 	@Autowired
 	private RoleRepository roleRepo;
 
+	@Autowired
+	private EmploymentRepository employmentRepo;
+	
+	@Autowired
+	private UserRepository userRepo;
+
+
 	@Override
 	public StudentDto getStudentById(Long id) {
 		Student student = studentRepo.findById(id).orElse(null);
 		if (student == null) {
 			return null;
+		}else {
+			StudentDto studentDto = new StudentDto(student);
+			Employment employment = employmentRepo.findByCid(student.getCid()).orElse(null);
+			if(employment != null) {
+				EmploymentDto employmentDto = new EmploymentDto(employment);
+				
+				studentDto.setEmployment(employmentDto);
+
+			}
+			return studentDto;
 		}
-		StudentDto studentDto = new StudentDto(student);
-		return studentDto;
+		
 	}
 
 	@Override
@@ -78,15 +99,14 @@ public class StudentServiceImpl implements StudentService {
 		return studentDtoList;
 	}
 
-	private User getUser(String userName, String email) {
+	private void saveUser(String userName, String email) {
 		Role studentRole = roleRepo.findByName(ERole.ROLE_STUDENT).orElse(null);
-		String password = commonUtil.generatePassword();
 		String userEmail = null;
 		if(email != null && !email.isEmpty()) {
 			userEmail = email;
 		}
-		User user = new User(userName, userEmail, encoder.encode(password), new Date(), new Date(), studentRole);
-		return user;
+		User user = new User(userName, userEmail,null , new Date(), new Date(), studentRole);
+		userRepo.save(user);
 	}
 
 	@Override
@@ -112,13 +132,17 @@ public class StudentServiceImpl implements StudentService {
 			return new GenericResponse(false, "Did is already exist");
 		}
 
+		
 		Student saveObj = null;
 		try {
 			Student student = studentDto.getEntity();
 			if (student.getId() == null || student.getId() == 0) {
+				Long maxId = studentRepo.getStudentMaxId().orElse((long) 0);
+				student.setId(maxId+ 1); // set student id
 				String userName = studentDto.getName() + "-" + studentDto.getCid();
-				User user = getUser(userName, student.getEmail());
-				student.setUser(user);
+				if(!userRepo.existsByUserName(userName)) {
+					saveUser(userName, student.getEmail());
+				}
 			}
 			saveObj = studentRepo.saveAndFlush(student);
 		} catch (ParseException e) {
@@ -129,9 +153,9 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public StudentDto getStudentByUserId(Long userId) {
+	public StudentDto getStudentByCid(String cid) {
 		StudentDto studentDto = null;
-		Student student = studentRepo.findByUserId(userId).orElse(null);
+		Student student = studentRepo.findByCid(cid).orElse(null);
 		if(student!= null) {
 			studentDto = new StudentDto(student);
 		}

@@ -41,8 +41,8 @@ public class TrainerServiceImpl implements TrainerService{
 				searchDto.getSortType() == 1 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending());
 		List<Trainer> trainerList = new ArrayList<Trainer>();
 		if (searchDto.getSearchKeyword() != null && !searchDto.getSearchKeyword().isEmpty()) {
-				Long id = CSVHelper.isNumeric(searchDto.getSearchKeyword()) ? Long.parseLong(searchDto.getSearchKeyword()) : 0;
-			 trainerList = trainerRepo.getTrainerByPager(id,searchDto.getSearchKeyword() , paging);
+				
+			 trainerList = trainerRepo.getTrainerByPager(searchDto.getSearchKeyword(),searchDto.getSearchKeyword() , paging);
 		} else {
 			trainerList = trainerRepo.findAll(paging).toList();
 		}

@@ -36,7 +36,7 @@ public class Student implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+//	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = "id")
     private Long id;
 	
@@ -92,10 +92,6 @@ public class Student implements Serializable{
 	@Column(name = "employment_type_id")
 	private Long employmentTypeId;
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="system_user_id")
-	private User user;
-
 	@Column(name = "user_id")
 	private Long userId;
 	

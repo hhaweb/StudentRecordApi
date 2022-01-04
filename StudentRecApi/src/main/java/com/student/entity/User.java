@@ -41,7 +41,7 @@ public class User implements Serializable{
 	@Column(name = "email")
 	private String email;
 	
-	@NotBlank
+	
 	@Size(max = 120)
 	@Column(name = "password")
 	private String password;

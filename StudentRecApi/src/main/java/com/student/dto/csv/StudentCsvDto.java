@@ -89,7 +89,7 @@ public class StudentCsvDto {
 
 	
 	
-	public Student getEntity(User user) throws ParseException {
+	public Student getEntity() throws ParseException {
 		DateFormat timeForamt = new SimpleDateFormat(ConfigData.DateFormatWithTime);
 		DateFormat dateFormat = new SimpleDateFormat(ConfigData.DateFormat);
 		Student student = new Student();
@@ -113,11 +113,9 @@ public class StudentCsvDto {
 		if (CSVHelper.isNumeric(this.employmentTypeId)) {
 			student.setEmploymentTypeId(Long.parseLong(this.employmentTypeId));
 		}
-		if (!CSVHelper.isNumeric(this.id)) {
-			student.setUser(user);
-		}
-		if (CSVHelper.isNumeric(this.userId)) {
-			student.setTrainingCenterId(Long.parseLong(this.userId));
+		
+		if (CSVHelper.isNumeric(this.userId)) { // user from student csv upload
+			student.setUserId(Long.parseLong(this.userId));
 		}
 		if (CSVHelper.isNumeric(this.trainingCenterId)) {
 			student.setTrainingCenterId(Long.parseLong(this.trainingCenterId));
@@ -129,8 +127,6 @@ public class StudentCsvDto {
 			student.setTrainingYear(Integer.parseInt(this.trainingYear));
 		}
 		
-	
-
 		student.setCid(this.cid);
 		student.setDid(this.did);
 		student.setName(this.name);

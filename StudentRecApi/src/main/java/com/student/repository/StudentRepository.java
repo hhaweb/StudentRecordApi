@@ -40,5 +40,9 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 	
 	@Query(value = "select s from Student s where s.cid in (select c.cId from Course c where c.courseId=:courseId ) ")
 	List<Student> getStudentByCourseId(@Param("courseId") String courseId);
+	
+	@Query(value = "select max(s.id) from Student s")
+	Optional<Long> getStudentMaxId();
 
+	Optional<Student> findByCid(String cid);
 }

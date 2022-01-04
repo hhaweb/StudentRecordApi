@@ -122,12 +122,16 @@ public class AuthController {
 				}
 			}
 		}
-		
 		Long studentId = (long) 0;
-		StudentDto studentDto = studentService.getStudentByUserId(userDetails.getId());
-		if(studentDto != null) {
-			studentId = studentDto.getId();
+		String userName = userDetails.getUserName();
+		if(userName.lastIndexOf("-") != -1) {
+			String cid = userName.substring(userName.lastIndexOf("-")+1, userName.length());
+			StudentDto studentDto = studentService.getStudentByCid(cid);
+			if(studentDto != null) {
+				studentId = studentDto.getId();
+			}
 		}
+		
 
 		configData.setMenus(roleMenuList);
 		configData.setRouteList(routeList);

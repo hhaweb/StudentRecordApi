@@ -29,6 +29,9 @@ public class Employment implements Serializable {/**
 	@Column(name = "id")
 	private Long id;
 	
+	@Column(name = "cid")
+	private String cid;
+	
 	@Column(name = "status")
 	private String status;
 	

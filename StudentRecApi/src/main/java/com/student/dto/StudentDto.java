@@ -34,6 +34,8 @@ public class StudentDto {
 	private String maritalStatus;
 	private String avatar;
 	private String status;
+	private Long employmentTypeId;
+	private Long trainingCenterId;
 
 	private String createdDate;
 	private String updatedDate;
@@ -44,8 +46,12 @@ public class StudentDto {
 	private Integer batchNo;
 	private Integer trainingYear;
 	private Long totalRecord;
+	private List<CourseModel> recommandCourses;
+	private List<CourseDto> courseList;
 	
-	private List<CourseDto> courseDtoList;
+	// employment type data
+	private EmploymentDto employment;
+	
 	
 
 	public StudentDto(Student student) {
@@ -64,6 +70,8 @@ public class StudentDto {
 			this.avatar = student.getAvatar();
 			this.status = student.getStatus();
 			this.batchNo = student.getBatchNo();
+			this.employmentTypeId = student.getEmploymentTypeId();
+			this.trainingCenterId = student.getTrainingCenterId();
 			this.userId = student.getUserId();
 
 			if (student.getDateOfBirth() != null) {
@@ -111,7 +119,13 @@ public class StudentDto {
 		student.setStatus(this.status);
 		student.setBatchNo(this.batchNo);
 		student.setUserId(this.userId);
-
+		
+		if(this.trainingCenterId != null) {
+			student.setTrainingCenterId(this.trainingCenterId);
+		}
+		if(this.employmentTypeId != null) {
+			student.setEmploymentTypeId(this.employmentTypeId);
+		}
 		if (this.createdDate != null) {
 			student.setCreatedDate(dfWithTime.parse(this.createdDate));
 		}

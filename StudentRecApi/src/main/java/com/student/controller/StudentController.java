@@ -20,6 +20,8 @@ import com.student.dto.StudentDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
 import com.student.dto.csv.StudentCsvDto;
+import com.student.entity.Employment;
+import com.student.service.CourseService;
 import com.student.service.StudentService;
 import com.student.util.CSVHelper;
 
@@ -29,6 +31,7 @@ import com.student.util.CSVHelper;
 public class StudentController {
 	@Autowired
 	StudentService studentService;
+
 
 	@GetMapping("/get-student-by-id")
 	public StudentDto getStudentById(@RequestParam("studentId") String id) {
@@ -72,6 +75,4 @@ public class StudentController {
 		}
 		CSVHelper.exportStudentList(response, studentCsvLisr);
 	} 
-
-	
 }
