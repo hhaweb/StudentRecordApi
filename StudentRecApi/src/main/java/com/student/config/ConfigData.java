@@ -22,6 +22,9 @@ public class ConfigData {
 			"Course Level", "Duration", "Start Date", "End Date", "Cohort Size Male", "Cohort Size Female",
 			"Number of Applicants Male", "Number of Applicants Female", "No. of Students Certified Male","No. of Students Certified Female","Batch Number","Training Location",
 			"Trainer ID","Student Name","CID","DID","Remark");
+	
+	public static final List<String> CourseCSVExportHeader = Arrays.asList("Course ID", "Course Name", "Course Status", 
+			"Course Level",  "Start Date", "End Date", "Cohort Size Male", "Cohort Size Female","Batch Number","Training Location");
 
 	public static final List<String> TrainerCSVHeader = Arrays.asList("Trainer ID", "Trainer Name", "Sex", "Country","Date of Joining","Designation","Department",
 			"Branch/ Area of Expertise","DSP Centre","Training Programme","Trainer Affiliation","Qualification");

@@ -33,6 +33,9 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 	@Query(nativeQuery =true,value = "select count(*) from student")
 	Long getTotalRecord();
 	
+	@Query(value = "select count(s) from Student s  where s.id =:id or s.name like %:name%")
+	Long getTotalRecordWithFilter(@Param("id") Long id, @Param("name") String studentName);
+	
 	Optional<Student> findByUserId(Long userId);
 	
 	@Query(value = "select s from Student s where s.id =:id or s.name like %:name%")

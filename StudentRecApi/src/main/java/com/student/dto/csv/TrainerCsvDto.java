@@ -12,6 +12,7 @@ import javax.persistence.Id;
 
 import com.opencsv.bean.CsvBindByName;
 import com.student.config.ConfigData;
+import com.student.dto.TrainerDto;
 import com.student.entity.Trainer;
 import com.student.util.CSVHelper;
 
@@ -121,4 +122,23 @@ public class TrainerCsvDto {
 
 		return trainer;
 	}
+
+	public TrainerCsvDto(TrainerDto trainer) {
+		super();
+		this.trainerId = trainer.getTrainerId();
+		this.trainerName = trainer.getTrainerName();
+		this.gender = trainer.getGender();
+		this.nationality = trainer.getNationality();
+		this.joinDate = trainer.getJoinDate();
+		this.designation = trainer.getDesignation();
+		this.department = trainer.getDepartment();
+		this.branch = trainer.getBranch();
+		this.dspCenter = trainer.getDspCenter();
+		this.trainingProgramme = trainer.getTrainingProgramme();
+		this.affiliation = trainer.getAffiliation();
+		this.qualification = trainer.getQualification();
+	}
+	
+	
+	
 }

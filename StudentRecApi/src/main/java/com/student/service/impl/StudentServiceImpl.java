@@ -15,10 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.student.config.ERole;
+import com.student.config.ResponseMessage;
 import com.student.dto.EmploymentDto;
 import com.student.dto.StudentDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
+import com.student.entity.Course;
 import com.student.entity.Employment;
 import com.student.entity.Role;
 import com.student.entity.Student;
@@ -48,6 +50,8 @@ public class StudentServiceImpl implements StudentService {
 	
 	@Autowired
 	private UserRepository userRepo;
+	@Autowired
+	private CourseRepository courseRepo;
 
 
 	@Override
@@ -60,9 +64,7 @@ public class StudentServiceImpl implements StudentService {
 			Employment employment = employmentRepo.findByCid(student.getCid()).orElse(null);
 			if(employment != null) {
 				EmploymentDto employmentDto = new EmploymentDto(employment);
-				
 				studentDto.setEmployment(employmentDto);
-
 			}
 			return studentDto;
 		}
@@ -72,14 +74,25 @@ public class StudentServiceImpl implements StudentService {
 	@Override
 	public List<StudentDto> getStudentWithPager(SearchDto searchDto) {
 		List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
-
+		Long totalRecord = (long) 0;
+		Long id = null;
+		if(CSVHelper.isNumeric(searchDto.getSearchKeyword())) {
+			 id = Long.parseLong(searchDto.getSearchKeyword());
+		}
+		if(searchDto.getSearchKeyword() != null) {
+			totalRecord = studentRepo.getTotalRecordWithFilter(id, searchDto.getSearchKeyword());
+		} else {
+			totalRecord = studentRepo.getTotalRecord();
+		}
+		
+		
 		int pageNo = searchDto.getRowOffset();
-		int pageSize = (int) (searchDto.isExport == true ? studentRepo.getTotalRecord() : searchDto.getRowsPerPage());
+		int pageSize = (int) (searchDto.isExport == true ? totalRecord : searchDto.getRowsPerPage());
 		String sortBy = searchDto.getSortName();
 		Pageable paging = PageRequest.of(pageNo, pageSize,
 				searchDto.getSortType() == 1 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending());
 		List<Student> studentList = new ArrayList<Student>();
-		Long id = null;
+		
 		if (searchDto.getSearchKeyword() != null) {
 			if(CSVHelper.isNumeric(searchDto.getSearchKeyword())) {
 				 id = Long.parseLong(searchDto.getSearchKeyword());
@@ -93,7 +106,7 @@ public class StudentServiceImpl implements StudentService {
 			for (Student student : studentList) {
 				studentDtoList.add(new StudentDto(student));
 			}
-			studentDtoList.get(0).setTotalRecord(studentRepo.getTotalRecord());
+			studentDtoList.get(0).setTotalRecord(totalRecord);
 		}
 
 		return studentDtoList;
@@ -136,6 +149,7 @@ public class StudentServiceImpl implements StudentService {
 		Student saveObj = null;
 		try {
 			Student student = studentDto.getEntity();
+			
 			if (student.getId() == null || student.getId() == 0) {
 				Long maxId = studentRepo.getStudentMaxId().orElse((long) 0);
 				student.setId(maxId+ 1); // set student id
@@ -144,6 +158,10 @@ public class StudentServiceImpl implements StudentService {
 					saveUser(userName, student.getEmail());
 				}
 			}
+			EmploymentDto employmentDto = studentDto.getEmployment();
+			employmentDto.setCid(studentDto.getCid());
+			Employment employment = employmentDto.getEntity();
+			employmentRepo.save(employment);
 			saveObj = studentRepo.saveAndFlush(student);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -173,6 +191,16 @@ public class StudentServiceImpl implements StudentService {
 			}
 		}
 		return studentDtoList;
+	}
+
+	@Override
+	public GenericResponse deleteStudent(Long studentId) {
+		Student student = studentRepo.findById(studentId).orElse(null);
+		if(student != null) {
+		 courseRepo.deleteByCid(student.getCid());
+		 studentRepo.delete(student);
+		}
+		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
 	}
 
 }

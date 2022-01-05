@@ -16,6 +16,9 @@ public interface TrainerRepository extends JpaRepository<Trainer, Long>{
 	@Query(nativeQuery =true,value = "select count(*) from trainer")
 	Long getTotalRecord();
 	
+	@Query(value = "select count(t) from Trainer t  where t.trainerId like %:trainerId% or t.trainerName like %:trainerName%")
+	Long getTotalRecordWithFilter(@Param("trainerId") String trainerId, @Param("trainerName") String trainerNam);
+	
 	@Query(value = "select t from Trainer t where t.trainerId like %:trainerId% or t.trainerName like %:trainerName%")
 	List<Trainer> getTrainerByPager(@Param("trainerId") String trainerId, @Param("trainerName") String trainerName,  Pageable page);
 	

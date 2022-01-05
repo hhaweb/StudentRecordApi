@@ -13,5 +13,4 @@ public interface CourseService {
 	List<CourseModel> getCourseListWithPager(SearchDto searchDto);
 	List<CourseDto> getCourseByCid(String cId);
 	List<CourseModel> getRecommendedCourses(String cid);
-
 }

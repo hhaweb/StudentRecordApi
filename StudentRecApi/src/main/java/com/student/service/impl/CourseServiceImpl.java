@@ -58,9 +58,9 @@ public class CourseServiceImpl implements CourseService {
 
 	@Override
 	public List<CourseModel> getCourseListWithPager(SearchDto searchDto) {
-
+		Long totalRecords = courseRepo.getTotalRecordGroupBy(searchDto.searchKeyword, searchDto.searchKeyword);
 		int pageNo = searchDto.getRowOffset();
-		int pageSize = searchDto.getRowsPerPage();
+		int pageSize = (int) (searchDto.isExport == true ? totalRecords : searchDto.getRowsPerPage());
 		String sortBy = searchDto.getSortName();
 		Pageable paging = PageRequest.of(pageNo, pageSize,
 				searchDto.getSortType() == 1 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending());
@@ -72,7 +72,7 @@ public class CourseServiceImpl implements CourseService {
 		}
 		
 		if(courseList.size() > 0) {
-			Long totalRecords = courseRepo.getTotalRecordGroupBy(searchDto.searchKeyword, searchDto.searchKeyword);
+			
 			courseList.get(0).setTotalRecords(totalRecords);
 		}
 		return courseList;

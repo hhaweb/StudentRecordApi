@@ -29,4 +29,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 			+ "and c.sector in(:sectors) and c.status <> 'Completed' "
 			+ " GROUP BY c.courseId,c.sector")	
 	List<CourseModel> getRecommendCourses(@Param("courseIds") List<String> courseIds, @Param("sectors") List<String> sectors );
+	
+	@Query(value = "delete from Course c where c.cId =:cId")
+	void deleteByCid(@Param("cId") String cId);
 }

@@ -12,6 +12,8 @@ import javax.persistence.Id;
 
 import com.opencsv.bean.CsvBindByName;
 import com.student.config.ConfigData;
+import com.student.dto.CourseDto;
+import com.student.dto.CourseModel;
 import com.student.entity.Course;
 import com.student.entity.Student;
 import com.student.entity.Trainer;
@@ -20,77 +22,76 @@ import com.student.util.CSVHelper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class CourseCsvDto {
 	@CsvBindByName(column = "Course ID")
 	private String courseId;
-	
+
 	@CsvBindByName(column = "Course Name")
 	private String courseName;
-	
+
 	@CsvBindByName(column = "Course Status")
 	private String status;
-	
+
 	@CsvBindByName(column = "Industrial Sector")
 	private String sector;
-	
+
 	@CsvBindByName(column = "Course Level")
 	private String courseLevel;
-	
+
 	@CsvBindByName(column = "Duration")
 	private String duration;
-	
+
 	@CsvBindByName(column = "Start Date")
 	private String startDate;
-	
+
 	@CsvBindByName(column = "End Date")
 	private String endDate;
-	
+
 	@CsvBindByName(column = "Cohort Size Male")
 	private String cohortSizeMale;
-	
+
 	@CsvBindByName(column = "Cohort Size Female")
 	private String cohortSizeFemale;
-		
+
 	@CsvBindByName(column = "NO. Applicants Male")
 	private String numberOfApplicantsMale;
-	
+
 	@CsvBindByName(column = "NO. Applicants Female")
 	private String numberOfApplicantsFemale;
-	
+
 	@CsvBindByName(column = "NO. Students Certified Male")
 	private String numberOfCertifiedMale;
-	
+
 	@CsvBindByName(column = "NO. Students Certified Female")
 	private String numberOfCertifiedFemale;
-	
+
 	@CsvBindByName(column = "Batch Number")
 	private String batchNo;
-	
+
 	@CsvBindByName(column = "Training Location")
 	private String trainingLoaction;
-	
+
 	@CsvBindByName(column = "Trainer ID")
 	private String trainerId;
-	
+
 	@CsvBindByName(column = "Student Name")
 	private String studentName;
-	
+
 	@CsvBindByName(column = "CID")
 	private String cId;
-	
+
 	@CsvBindByName(column = "DID")
 	private String dId;
-	
+
 	@CsvBindByName(column = "Remark")
 	private String errorMessage;
 
 	private boolean isHaveError;
-	
-	
-	
+
 //	@CsvBindByName(column = "trainer name")
 //	private String trainerName;
 //	
@@ -99,86 +100,117 @@ public class CourseCsvDto {
 //	
 //	@CsvBindByName(column = "trainer affiliation")
 //	private String trainerAffiliation;
-	
+
 	public Course getEntity() throws ParseException {
 		DateFormat df = new SimpleDateFormat(ConfigData.DateFormat);
 		Course course = new Course();
-		
-		if(CSVHelper.isNumeric(this.numberOfApplicantsFemale)) {
+
+		if (CSVHelper.isNumeric(this.numberOfApplicantsFemale)) {
 			course.setNumberOfApplicantsFemale(Integer.parseInt(this.numberOfApplicantsFemale));
 		}
-		if(CSVHelper.isNumeric(this.numberOfApplicantsMale)) {
+		if (CSVHelper.isNumeric(this.numberOfApplicantsMale)) {
 			course.setNumberOfApplicantsMale(Integer.parseInt(this.numberOfApplicantsMale));
 		}
 
-		if(CSVHelper.isNumeric(this.cohortSizeFemale)) {
+		if (CSVHelper.isNumeric(this.cohortSizeFemale)) {
 			course.setCohortSizeFemale(Integer.parseInt(this.cohortSizeFemale));
 		}
-		if(CSVHelper.isNumeric(this.cohortSizeMale)) {
+		if (CSVHelper.isNumeric(this.cohortSizeMale)) {
 			course.setCohortSizeMale(Integer.parseInt(this.cohortSizeMale));
 		}
-		
-		if(CSVHelper.isNumeric(this.numberOfCertifiedFemale)) {
+
+		if (CSVHelper.isNumeric(this.numberOfCertifiedFemale)) {
 			course.setNumberOfCertifiedFemale(Integer.parseInt(this.numberOfCertifiedFemale));
 		}
-		
-		if(CSVHelper.isNumeric(this.numberOfCertifiedMale)) {
+
+		if (CSVHelper.isNumeric(this.numberOfCertifiedMale)) {
 			course.setNumberOfCertifiedFemale(Integer.parseInt(this.numberOfCertifiedMale));
 		}
-		
-		if(!this.batchNo.equalsIgnoreCase("NULL") && !this.batchNo.isEmpty()) {
+
+		if (!this.batchNo.equalsIgnoreCase("NULL") && !this.batchNo.isEmpty()) {
 			course.setBatchNo(this.batchNo);
 		}
-		
-		if(!this.trainerId.equalsIgnoreCase("NULL") && !this.trainerId.isEmpty()) {
+
+		if (!this.trainerId.equalsIgnoreCase("NULL") && !this.trainerId.isEmpty()) {
 			course.setTrainerId(this.trainerId);
 		}
-		
-		if(CSVHelper.validateDateFormat(this.startDate, ConfigData.DateFormat)) {
+
+		if (CSVHelper.validateDateFormat(this.startDate, ConfigData.DateFormat)) {
 			course.setStartDate(df.parse(this.startDate));
 		}
-		
-		if(CSVHelper.validateDateFormat(this.endDate, ConfigData.DateFormat)) {
+
+		if (CSVHelper.validateDateFormat(this.endDate, ConfigData.DateFormat)) {
 			course.setEndDate(df.parse(this.endDate));
 		}
-		
-		if(!this.courseId.equalsIgnoreCase("NULL") && !this.courseId.isEmpty()) {
+
+		if (!this.courseId.equalsIgnoreCase("NULL") && !this.courseId.isEmpty()) {
 			course.setCourseId(this.courseId);
 		}
 
-		if(!this.courseName.equalsIgnoreCase("NULL") && !this.courseName.isEmpty()) {
+		if (!this.courseName.equalsIgnoreCase("NULL") && !this.courseName.isEmpty()) {
 			course.setCourseName(this.courseName);
 		}
-		if(!this.status.equalsIgnoreCase("NULL") && !this.status.isEmpty()) {
+		if (!this.status.equalsIgnoreCase("NULL") && !this.status.isEmpty()) {
 			course.setStatus(this.status);
 		}
-		if(!this.sector.equalsIgnoreCase("NULL") && !this.sector.isEmpty()) {
+		if (!this.sector.equalsIgnoreCase("NULL") && !this.sector.isEmpty()) {
 			course.setSector(this.sector);
 		}
-		
-		if(!this.courseLevel.equalsIgnoreCase("NULL") && !this.courseLevel.isEmpty()) {
+
+		if (!this.courseLevel.equalsIgnoreCase("NULL") && !this.courseLevel.isEmpty()) {
 			course.setCourseLevel(this.courseLevel);
 		}
-		
-		if(!this.duration.equalsIgnoreCase("NULL") && !this.duration.isEmpty()) {
+
+		if (!this.duration.equalsIgnoreCase("NULL") && !this.duration.isEmpty()) {
 			course.setDuration(this.duration);
 		}
-		
-		if(!this.trainingLoaction.equalsIgnoreCase("NULL") && !this.trainingLoaction.isEmpty()) {
+
+		if (!this.trainingLoaction.equalsIgnoreCase("NULL") && !this.trainingLoaction.isEmpty()) {
 			course.setTrainingLoaction(this.trainingLoaction);
 		}
-		
-		if(!this.trainerId.equalsIgnoreCase("NULL") && !this.trainerId.isEmpty()) {
+
+		if (!this.trainerId.equalsIgnoreCase("NULL") && !this.trainerId.isEmpty()) {
 			course.setTrainerId(this.trainerId);
 		}
-		if(!this.cId.equalsIgnoreCase("NULL") && !this.cId.isEmpty()) {
+		if (!this.cId.equalsIgnoreCase("NULL") && !this.cId.isEmpty()) {
 			course.setCId(this.cId);
 		}
-		if(!this.dId.equalsIgnoreCase("NULL") && !this.dId.isEmpty()) {
+		if (!this.dId.equalsIgnoreCase("NULL") && !this.dId.isEmpty()) {
 			course.setDId(this.dId);
 		}
 		return course;
-		
 	}
-}
 
+	public CourseCsvDto(CourseModel courseDto) {
+		DateFormat df = new SimpleDateFormat();
+		this.courseId = courseDto.getCourseId();
+		this.courseName = courseDto.getCourseName();
+		this.status = courseDto.getStatus();
+	//	this.sector = courseDto.getSector();
+		this.courseLevel = courseDto.getCourseLevel();
+		this.duration = courseDto.getDuration();
+		this.startDate = df.format(courseDto.getStartDate());
+		this.endDate = df.format(courseDto.getEndDate());
+		this.cohortSizeMale = courseDto.getCohortSizeMale() != null ? courseDto.getCohortSizeMale().toString() : null;
+		this.cohortSizeFemale = courseDto.getCohortSizeFemale() != null ? courseDto.getCohortSizeFemale().toString()
+				: null;
+//		this.numberOfApplicantsMale = courseDto.getNumberOfApplicantsMale() != null
+//				? courseDto.getNumberOfApplicantsMale().toString()
+//				: null;
+//		this.numberOfApplicantsFemale = courseDto.getNumberOfApplicantsFemale() != null
+//				? courseDto.getNumberOfApplicantsFemale().toString()
+//				: null;
+//		this.numberOfCertifiedMale = courseDto.getNumberOfCertifiedMale() != null
+//				? courseDto.getNumberOfCertifiedMale().toString()
+//				: null;
+//		this.numberOfCertifiedFemale = courseDto.getNumberOfCertifiedFemale() != null
+//				? courseDto.getNumberOfCertifiedFemale().toString()
+//				: null;
+		this.batchNo = courseDto.getBatchNo();
+		this.trainingLoaction = courseDto.getTrainingLoaction();
+//		this.trainerId = courseDto.getTrainerId();
+//		this.cId = courseDto.getCId();
+//		this.dId = courseDto.getDId();
+	}
+
+}

@@ -13,6 +13,7 @@ public interface StudentService {
 	StudentDto getStudentByCid(String cid);
 	List<StudentDto> getStudentWithPager(SearchDto searchDto);
 	GenericResponse saveStudent(StudentDto studentDto);
+	GenericResponse deleteStudent(Long studentId);
 	List<StudentDto> getStudentByCourseId(String courseId);
 
 }

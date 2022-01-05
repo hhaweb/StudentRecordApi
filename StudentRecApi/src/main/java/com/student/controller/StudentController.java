@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.student.config.ResponseMessage;
+import com.student.dto.CourseDto;
+import com.student.dto.CourseModel;
 import com.student.dto.StudentDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
@@ -24,6 +26,7 @@ import com.student.entity.Employment;
 import com.student.service.CourseService;
 import com.student.service.StudentService;
 import com.student.util.CSVHelper;
+import com.student.util.ExcelWriter;
 
 @CrossOrigin("*")
 @RestController
@@ -31,7 +34,8 @@ import com.student.util.CSVHelper;
 public class StudentController {
 	@Autowired
 	StudentService studentService;
-
+	@Autowired
+	CourseService courseService;
 
 	@GetMapping("/get-student-by-id")
 	public StudentDto getStudentById(@RequestParam("studentId") String id) {
@@ -75,4 +79,15 @@ public class StudentController {
 		}
 		CSVHelper.exportStudentList(response, studentCsvLisr);
 	} 
+	
+	@GetMapping("export-student-detail")
+	public void exportSaleHeaderList(HttpServletResponse response, @RequestParam("studentId") String id) {
+		Long studentId = Long.parseLong(id);
+		StudentDto studentDto =  studentService.getStudentById(studentId);
+		List<CourseDto> courseList = courseService.getCourseByCid(studentDto.getCid());
+		List<CourseModel> recommandCourseList = courseService.getRecommendedCourses(studentDto.getCid());
+		studentDto.setCourseList(courseList);
+		studentDto.setRecommandCourses(recommandCourseList);
+		ExcelWriter.exportStudentDetails(response, studentDto);
+	}
 }

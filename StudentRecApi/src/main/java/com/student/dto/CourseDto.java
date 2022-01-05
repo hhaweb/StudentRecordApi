@@ -52,6 +52,8 @@ public class CourseDto {
 	private String dId;
 	private Long totalRecords;
 	
+	private List<StudentDto> studentList;
+	
 //	private TrainerDto trainerDto;
 //	private StudentDto studentDto;
 	

@@ -42,7 +42,9 @@ import com.opencsv.CSVWriter;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.student.config.ConfigData;
+import com.student.dto.csv.CourseCsvDto;
 import com.student.dto.csv.StudentCsvDto;
+import com.student.dto.csv.TrainerCsvDto;
 import com.student.entity.Student;
 
 @Component
@@ -166,5 +168,54 @@ public class CSVHelper {
 	
 		
 		
+	}
+	
+	public static void exportCourseList(HttpServletResponse response, List<CourseCsvDto> courseList) {
+		Date date = new Date();
+		String fileName = "course_"+df.format(date)+".csv";
+		response.setContentType("text/csv");
+		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName);
+		response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
+		List<String> headerList = ConfigData.CourseCSVExportHeader;
+		CSVWriter csvWriter;
+		try {
+			csvWriter = new CSVWriter(response.getWriter());
+			String[] headers = (String[]) headerList.toArray();
+			csvWriter.writeNext(headers); // write header
+			for (CourseCsvDto course : courseList) {
+				csvWriter.writeNext(new String[] { course.getCourseId(), course.getCourseName(), course.getStatus(),
+						 course.getCourseLevel(),course.getStartDate(), course.getEndDate(), course.getCohortSizeMale(), course.getCohortSizeFemale(),
+						 course.getBatchNo(), course.getTrainingLoaction(),});
+			}
+			csvWriter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void exportTrainerList(HttpServletResponse response, List<TrainerCsvDto> trainerList) {
+		Date date = new Date();
+		String fileName = "trainer_"+df.format(date)+".csv";
+		response.setContentType("text/csv");
+		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName);
+		response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
+		List<String> headerList = ConfigData.TrainerCSVHeader;
+		CSVWriter csvWriter;
+		try {
+			csvWriter = new CSVWriter(response.getWriter());
+			String[] headers = (String[]) headerList.toArray();
+			csvWriter.writeNext(headers); // write header
+			for (TrainerCsvDto trainer : trainerList) {
+				csvWriter.writeNext(new String[] { trainer.getTrainerId(), trainer.getTrainerName(),
+						trainer.getGender(), trainer.getNationality(), trainer.getJoinDate(), trainer.getDesignation(),
+						trainer.getDepartment(), trainer.getBranch(), trainer.getDspCenter(),
+						trainer.getTrainingProgramme(), trainer.getAffiliation(), trainer.getQualification() });
+			}
+			csvWriter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

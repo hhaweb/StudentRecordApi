@@ -87,8 +87,6 @@ public class StudentCsvDto {
 
 	private boolean isHaveError;
 
-	
-	
 	public Student getEntity() throws ParseException {
 		DateFormat timeForamt = new SimpleDateFormat(ConfigData.DateFormatWithTime);
 		DateFormat dateFormat = new SimpleDateFormat(ConfigData.DateFormat);
@@ -105,7 +103,7 @@ public class StudentCsvDto {
 		if (CSVHelper.validateDateFormat(this.deletedAt, ConfigData.DateFormatWithTime)) {
 			student.setDeletedDate(timeForamt.parse(this.deletedAt));
 		}
-		
+
 		if (CSVHelper.validateDateFormat(this.dateOfBirth, ConfigData.DateFormat)) {
 			student.setDateOfBirth(dateFormat.parse(this.dateOfBirth));
 		}
@@ -113,7 +111,7 @@ public class StudentCsvDto {
 		if (CSVHelper.isNumeric(this.employmentTypeId)) {
 			student.setEmploymentTypeId(Long.parseLong(this.employmentTypeId));
 		}
-		
+
 		if (CSVHelper.isNumeric(this.userId)) { // user from student csv upload
 			student.setUserId(Long.parseLong(this.userId));
 		}
@@ -126,7 +124,7 @@ public class StudentCsvDto {
 		if (CSVHelper.isNumeric(this.trainingYear)) {
 			student.setTrainingYear(Integer.parseInt(this.trainingYear));
 		}
-		
+
 		student.setCid(this.cid);
 		student.setDid(this.did);
 		student.setName(this.name);
@@ -140,11 +138,9 @@ public class StudentCsvDto {
 
 	}
 
-
-
 	public StudentCsvDto(StudentDto studentDto) {
 		super();
-		if(studentDto.getId() != null) {
+		if (studentDto.getId() != null) {
 			this.id = studentDto.getId().toString();
 
 		}
@@ -158,6 +154,14 @@ public class StudentCsvDto {
 		this.bloodGroup = studentDto.getBloodGroup();
 		this.martialStatus = studentDto.getMaritalStatus();
 		this.status = studentDto.getStatus();
+		this.userId = studentDto.getUserId() != null ? studentDto.getUserId().toString() : null;
+		this.trainingCenterId = studentDto.getTrainingCenterId() != null ? studentDto.getTrainingCenterId().toString()
+				: null;
+		this.createdAt = studentDto.getCreatedDate();
+		this.deletedAt = studentDto.getDeletedDate();
+		this.updatedAt = studentDto.getUpdatedDate();
+		this.batchNo = studentDto.getBatchNo() != null ? studentDto.getBatchNo().toString() : null;
+		this.trainingYear = studentDto.getTrainingYear() != null ? studentDto.getTrainingYear().toString() : null;
 
 	}
 }

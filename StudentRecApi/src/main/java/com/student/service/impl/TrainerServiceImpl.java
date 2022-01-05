@@ -34,8 +34,15 @@ public class TrainerServiceImpl implements TrainerService{
 	@Override
 	public List<TrainerDto> getTrainerListWithPager(SearchDto searchDto) {
 		List<TrainerDto> trainerDtoList = new ArrayList<TrainerDto>();
+		Long totalRecord = (long) 0;
+		if(searchDto.searchKeyword != null) {
+			totalRecord = trainerRepo.getTotalRecordWithFilter(searchDto.searchKeyword, searchDto.searchKeyword);
+		} else {
+			totalRecord = trainerRepo.getTotalRecord();
+		}
+		
 		int pageNo = searchDto.getRowOffset();
-		int pageSize = searchDto.getRowsPerPage();
+		int pageSize = (int) (searchDto.isExport == true ? totalRecord : searchDto.getRowsPerPage());
 		String sortBy = searchDto.getSortName();
 		Pageable paging = PageRequest.of(pageNo, pageSize,
 				searchDto.getSortType() == 1 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending());
@@ -51,7 +58,7 @@ public class TrainerServiceImpl implements TrainerService{
 			for (Trainer trainer : trainerList) {
 				trainerDtoList.add(new TrainerDto(trainer));
 			}
-			trainerDtoList.get(0).setTotalRecords(trainerRepo.getTotalRecord());;
+			trainerDtoList.get(0).setTotalRecords(totalRecord);
 		}
 		
 		return trainerDtoList;

@@ -3,6 +3,7 @@ package com.student.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,14 @@ import com.student.dto.StudentDto;
 import com.student.dto.TrainerDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
+import com.student.dto.csv.CourseCsvDto;
+import com.student.dto.csv.StudentCsvDto;
+import com.student.dto.csv.TrainerCsvDto;
 import com.student.service.CourseService;
+import com.student.service.StudentService;
 import com.student.service.TrainerService;
+import com.student.util.CSVHelper;
+import com.student.util.ExcelWriter;
 
 @CrossOrigin("*")
 @RestController
@@ -32,6 +39,8 @@ public class CourseController {
 	CourseService courseService;
 	@Autowired
 	TrainerService trainerService;
+	@Autowired
+	StudentService studentService;
 	
 	@GetMapping("/get-course-by-id")
 	public CourseDto getCourseById(@RequestParam("courseId") String id) {
@@ -129,5 +138,45 @@ public class CourseController {
 		return courseDtoList;
 	}
 	
+	@GetMapping("export-course-detail")
+	public void exportSaleHeaderList(HttpServletResponse response, @RequestParam("courseId") String id) {
+		Long courseId = Long.parseLong(id);
+		CourseDto courseDto = courseService.getCourseById(courseId);
+		List<StudentDto> studentList = studentService.getStudentByCourseId(courseDto.getCourseId());
+		courseDto.setStudentList(studentList);	
+		ExcelWriter.exportCourseDetail(response, courseDto);
+	}
 	
+	@PostMapping("export-course-list")
+	public void exportCourseList(HttpServletResponse response, @RequestBody SearchDto searchDto) {
+		searchDto.isExport = true;
+		
+		List<CourseModel> courseDtoList = new ArrayList<CourseModel>();
+		List<CourseCsvDto> courseCsvList = new ArrayList<CourseCsvDto>();
+		try {
+			courseDtoList = courseService.getCourseListWithPager(searchDto);
+			for (CourseModel courseModel : courseDtoList) {
+				CourseCsvDto courseCSV = new CourseCsvDto(courseModel);
+				courseCsvList.add(courseCSV);
+			}
+			
+			CSVHelper.exportCourseList(response, courseCsvList);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	} 
+	
+	@PostMapping("export-trainer-list")
+	public void exportTrainerList(HttpServletResponse response, @RequestBody SearchDto searchDto) {
+		searchDto.isExport = true;
+		List<TrainerDto> trainerList = trainerService.getTrainerListWithPager(searchDto);
+		List<TrainerCsvDto> trainerCsvDtoList = new ArrayList<TrainerCsvDto>();
+		for (TrainerDto trainer : trainerList) {
+			TrainerCsvDto studentCsvDto = new TrainerCsvDto(trainer);
+			trainerCsvDtoList.add(studentCsvDto);
+		}
+			CSVHelper.exportTrainerList(response, trainerCsvDtoList);
+	
+	} 
 }
