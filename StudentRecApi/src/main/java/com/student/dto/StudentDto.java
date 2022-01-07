@@ -55,7 +55,7 @@ public class StudentDto {
 	
 
 	public StudentDto(Student student) {
-		DateFormat df = new SimpleDateFormat();
+		DateFormat df = new SimpleDateFormat(ConfigData.DateFormat);
 		if (student != null) {
 			this.id = student.getId();
 			this.name = student.getName();

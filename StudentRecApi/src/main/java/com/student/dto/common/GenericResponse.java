@@ -16,7 +16,6 @@ public class GenericResponse {
 
 	private Object payLoad;
 	
-
 	public GenericResponse(String id, boolean status, String message, Object payLoad) {
 		super();
 		this.id = id;

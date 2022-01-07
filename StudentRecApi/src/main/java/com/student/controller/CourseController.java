@@ -22,9 +22,11 @@ import com.student.dto.StudentDto;
 import com.student.dto.TrainerDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
+import com.student.dto.common.SelectedItem;
 import com.student.dto.csv.CourseCsvDto;
 import com.student.dto.csv.StudentCsvDto;
 import com.student.dto.csv.TrainerCsvDto;
+import com.student.entity.Role;
 import com.student.service.CourseService;
 import com.student.service.StudentService;
 import com.student.service.TrainerService;
@@ -176,7 +178,11 @@ public class CourseController {
 			TrainerCsvDto studentCsvDto = new TrainerCsvDto(trainer);
 			trainerCsvDtoList.add(studentCsvDto);
 		}
-			CSVHelper.exportTrainerList(response, trainerCsvDtoList);
-	
+			CSVHelper.exportTrainerList(response, trainerCsvDtoList);	
 	} 
+	
+	@GetMapping("get-trainer-item")
+	public List<SelectedItem> getTrainerItem() {	
+		return trainerService.getAllTrainer();
+	}
 }

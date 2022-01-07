@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.student.dto.TrainerDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
+import com.student.dto.common.SelectedItem;
 import com.student.entity.Trainer;
 import com.student.repository.TrainerRepository;
 import com.student.service.TrainerService;
@@ -100,6 +101,17 @@ public class TrainerServiceImpl implements TrainerService{
 			response.setMessage("Trainer does not exist");
 		}
 		return response;
+	}
+
+	@Override
+	public List<SelectedItem> getAllTrainer() {
+		List<SelectedItem> itemList = new ArrayList<SelectedItem>();
+		trainerRepo.findAll().forEach(t -> {
+			if(t != null) {
+				itemList.add(new SelectedItem(t.getTrainerName(), t.getTrainerId(), false));
+			}
+		});
+		return itemList;
 	}
 
 }

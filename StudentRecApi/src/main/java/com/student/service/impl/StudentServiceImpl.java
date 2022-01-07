@@ -160,8 +160,14 @@ public class StudentServiceImpl implements StudentService {
 			}
 			EmploymentDto employmentDto = studentDto.getEmployment();
 			employmentDto.setCid(studentDto.getCid());
-			Employment employment = employmentDto.getEntity();
-			employmentRepo.save(employment);
+			
+			if(employmentDto != null) {
+				employmentDto.setCid(studentDto.getCid());
+				Employment employment = employmentDto.getEntity();
+				employmentRepo.save(employment);
+			}
+			saveObj = studentRepo.saveAndFlush(student);
+			
 			saveObj = studentRepo.saveAndFlush(student);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
