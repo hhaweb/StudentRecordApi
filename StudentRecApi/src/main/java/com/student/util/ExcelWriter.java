@@ -19,6 +19,7 @@ import org.apache.poi.xssf.usermodel.XSSFDataFormat;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.ResourceUtils;
 
@@ -29,8 +30,8 @@ import com.student.dto.StudentDto;
 
 public class ExcelWriter {
 	static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss");
-
-	public static void exportCourseDetail(HttpServletResponse response, CourseDto courseDto) {
+	
+	public static void exportCourseDetail(HttpServletResponse response, CourseDto courseDto, String filePath) {
 		Date date = new Date();
 		String fileName = courseDto.getCourseId() + df.format(date) + ".xlsx";
 		response.setContentType("application/vnd.ms-excel");
@@ -38,7 +39,8 @@ public class ExcelWriter {
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
 		OutputStream outputStream = null;
 		try {
-			File file = ResourceUtils.getFile("classpath:Template/CourseDetail.xlsx");
+			String aa = filePath+File.separator+"template/CourseDetail.xlsx";
+			File file = new File(filePath+File.separator+"template/CourseDetail.xlsx");
 			OPCPackage pkg = OPCPackage.open(file);
 			outputStream = response.getOutputStream();
 			XSSFWorkbook workbook = new XSSFWorkbook(pkg);
@@ -118,7 +120,7 @@ public class ExcelWriter {
 		}
 	}
 
-	public static void exportStudentDetails(HttpServletResponse response, StudentDto studentDto) {
+	public static void exportStudentDetails(HttpServletResponse response, StudentDto studentDto, String filePath) {
 		Date date = new Date();
 		String fileName = studentDto.getName() + df.format(date) + ".xlsx";
 		response.setContentType("application/vnd.ms-excel");
@@ -126,7 +128,7 @@ public class ExcelWriter {
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
 		OutputStream outputStream = null;
 		try {
-			File file = ResourceUtils.getFile("classpath:Template/StudentDetail.xlsx");
+			File file = new File(filePath+File.separator+"template/StudentDetail.xlsx");
 
 			OPCPackage pkg = OPCPackage.open(file);
 			outputStream = response.getOutputStream();
@@ -255,7 +257,12 @@ public class ExcelWriter {
 	}
 
 	private static void createCellWithCurrency(Cell cell, Integer value, CellStyle cellStyle) {
-		cell.setCellValue(value);
+		if(value == null) {
+			cell.setCellValue(0);
+		}else {
+			cell.setCellValue(value);
+		}
+		
 		if (cellStyle != null) {
 			cell.setCellStyle(cellStyle);
 		}

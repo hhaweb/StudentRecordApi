@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ import com.student.dto.csv.CourseCsvDto;
 import com.student.dto.csv.StudentCsvDto;
 import com.student.dto.csv.TrainerCsvDto;
 import com.student.entity.Role;
+import com.student.service.CommonService;
 import com.student.service.CourseService;
 import com.student.service.StudentService;
 import com.student.service.TrainerService;
@@ -43,7 +45,11 @@ public class CourseController {
 	TrainerService trainerService;
 	@Autowired
 	StudentService studentService;
+	@Autowired
+	CommonService commonService;
 	
+	@Value("${upload.path}")
+	private String uploadPath;
 	@GetMapping("/get-course-by-id")
 	public CourseDto getCourseById(@RequestParam("courseId") String id) {
 		Long courseId = Long.parseLong(id);
@@ -128,6 +134,20 @@ public class CourseController {
 		
 	}
 	
+	@GetMapping("/delete-trainer")
+	public GenericResponse deleteTrainer(@RequestParam("trainerId") String trainerId) {
+		GenericResponse response = new GenericResponse();
+		try {
+			Long id = Long.parseLong(trainerId);
+			response = trainerService.deleteTrainer(id);
+		}catch (Exception e) {
+			e.printStackTrace();
+			response.setMessage(ResponseMessage.SERVER_ERROR);
+		}
+		return response;
+		
+	}
+	
 	@GetMapping("/get-recommend-courses")
 	public List<CourseModel> getRecommendedCourses(@RequestParam("cid") String cid) {
 		
@@ -146,7 +166,7 @@ public class CourseController {
 		CourseDto courseDto = courseService.getCourseById(courseId);
 		List<StudentDto> studentList = studentService.getStudentByCourseId(courseDto.getCourseId());
 		courseDto.setStudentList(studentList);	
-		ExcelWriter.exportCourseDetail(response, courseDto);
+		ExcelWriter.exportCourseDetail(response, courseDto, uploadPath);
 	}
 	
 	@PostMapping("export-course-list")
@@ -185,4 +205,12 @@ public class CourseController {
 	public List<SelectedItem> getTrainerItem() {	
 		return trainerService.getAllTrainer();
 	}
+	
+	@GetMapping("course-level")
+	public List<SelectedItem> getStudentStatus() {
+		return commonService.getCourseLevel();
+		
+	}
+	
+	
 }

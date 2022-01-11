@@ -28,10 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.bean.HeaderColumnNameMappingStrategy;
-import com.opencsv.bean.HeaderColumnNameMappingStrategyBuilder;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.student.config.ConfigData;
 import com.student.config.ERole;
 import com.student.config.ResponseMessage;
@@ -101,12 +97,12 @@ public class UploadServiceImpl implements UploadService {
 		String errorMessage = "";
 
 		// for empty check
-		if (student.getId() == null || student.getId().isEmpty()) {
-			errorMessage += ", id is empty";
-
-		} else if (!CSVHelper.isNumeric(student.getId())) {
-			errorMessage += ", invalid id";
-		}
+//		if (student.getId() == null || student.getId().isEmpty()) {
+//			errorMessage += ", id is empty";
+//
+//		} else if (!CSVHelper.isNumeric(student.getId())) {
+//			errorMessage += ", invalid id";
+//		}
 
 		if (student.getCid() == null) {
 			errorMessage += "cid is empty";
@@ -138,26 +134,24 @@ public class UploadServiceImpl implements UploadService {
 //		}
 
 		// for already exit check
-		if (errorMessage != "") {
-			if (studentRepo.isExistCidNumber(student.getCid()) && CSVHelper.isNumeric(student.getId())) { // for update
-																											// check
-				if (studentRepo.isExistStudent(Long.parseLong(student.getId()))) {
-					errorMessage += ", id does not exist";
-				}
-				if (studentRepo.isExistCidNumberById(student.getCid(), Long.parseLong(student.getId()))) {
-					errorMessage += ", cid is already exist";
-				}
+		
+		if(CSVHelper.isNumeric(student.getId())) {
+			if(!studentRepo.existsById(Long.parseLong(student.getId()))) {
+				errorMessage += ", id doesn't exist";
+			}
+			if (studentRepo.isExistCidNumberById(student.getCid(), Long.parseLong(student.getId()))) {
+				errorMessage += ", cid is already exist";
+			}
 
-				if (studentRepo.isExistDidNumberById(student.getDid(), Long.parseLong(student.getId()))) {
-					errorMessage += ", did is already exist";
-				}
-			} else { // for insert check
-				if (studentRepo.isExistDidNumber(student.getDid())) {
-					errorMessage += ", did is already exist";
-				}
-				if (studentRepo.isExistCidNumber(student.getCid())) {
-					errorMessage += ", cid is already exist";
-				}
+			if (studentRepo.isExistDidNumberById(student.getDid(), Long.parseLong(student.getId()))) {
+				errorMessage += ", did is already exist";
+			}
+		} else {
+			if (studentRepo.isExistDidNumber(student.getDid())) {
+				errorMessage += ", did is already exist";
+			}
+			if (studentRepo.isExistCidNumber(student.getCid())) {
+				errorMessage += ", cid is already exist";
 			}
 		}
 
@@ -174,11 +168,10 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	private void writeStudentCSVFile(String filePath, List<StudentCsvDto> errorList) {
-		List<String> headerList = ConfigData.StudentCSVHeaderError;
+		String[] headers = ConfigData.StudentCSVHeaderError;
 		CSVWriter csvWriter;
 		try {
 			csvWriter = new CSVWriter(new FileWriter(filePath));
-			String[] headers = (String[]) headerList.toArray();
 			csvWriter.writeNext(headers); // write header
 			for (StudentCsvDto student : errorList) {
 				csvWriter.writeNext(new String[] { student.getId(), student.getName(), student.getCid(),
@@ -229,13 +222,13 @@ public class UploadServiceImpl implements UploadService {
 		if (courseCsvDto.getStartDate() == null) {
 			errorMessage += ", start date is empty";
 		} else if (!CSVHelper.validateDateFormat(courseCsvDto.getStartDate(), ConfigData.DateFormat)) {
-			errorMessage += ", invalid created at date format";
+			errorMessage += ", invalid start date format";
 		}
 
 		if (courseCsvDto.getEndDate() == null) {
 			errorMessage += ", end date is empty";
 		} else if (!CSVHelper.validateDateFormat(courseCsvDto.getEndDate(), ConfigData.DateFormat)) {
-			errorMessage += ", invalid end at date format";
+			errorMessage += ", invalid end date format";
 		}
 
 		if (courseCsvDto.getTrainerId() != null && !courseCsvDto.getTrainerId().isEmpty()) {
@@ -268,11 +261,10 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	private void writeCourseCSVFile(String filePath, List<CourseCsvDto> errorList) {
-		List<String> headerList = ConfigData.CourseCSVHeaderError;
+		String[] headers = ConfigData.CourseCSVHeaderError;
 		CSVWriter csvWriter;
 		try {
-			csvWriter = new CSVWriter(new FileWriter(filePath));
-			String[] headers = (String[]) headerList.toArray();
+			csvWriter = new CSVWriter(new FileWriter(filePath));		
 			csvWriter.writeNext(headers); // write header
 			for (CourseCsvDto course : errorList) {
 				csvWriter.writeNext(new String[] { course.getCourseId(), course.getCourseName(), course.getStatus(),
@@ -280,8 +272,7 @@ public class UploadServiceImpl implements UploadService {
 						course.getEndDate(), course.getCohortSizeMale(), course.getCohortSizeFemale(),
 						course.getNumberOfApplicantsMale(), course.getNumberOfApplicantsFemale(),
 						course.getNumberOfCertifiedMale(), course.getNumberOfCertifiedFemale(), course.getBatchNo(),
-						course.getTrainingLoaction(), course.getTrainerId(), course.getTrainerId(),
-						course.getStudentName(), course.getCId(), course.getDId(), course.getErrorMessage() });
+						course.getTrainingLoaction(), course.getTrainerId(),course.getStudentName(), course.getCId(), course.getDId(), course.getErrorMessage() });
 			}
 			csvWriter.close();
 		} catch (IOException e) {
@@ -320,12 +311,11 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	private void writeTrainerCSVErrorFile(String filePath, List<TrainerCsvDto> errorList) {
-		List<String> headerList = ConfigData.TrainerCSVHeaderError;
+		String[] headerList = ConfigData.TrainerCSVHeaderError;
 		CSVWriter csvWriter;
 		try {
 			csvWriter = new CSVWriter(new FileWriter(filePath));
-			String[] headers = (String[]) headerList.toArray();
-			csvWriter.writeNext(headers); // write header
+			csvWriter.writeNext(headerList); // write header
 			for (TrainerCsvDto trainer : errorList) {
 				csvWriter.writeNext(new String[] { trainer.getTrainerId(), trainer.getTrainerName(),
 						trainer.getGender(), trainer.getNationality(), trainer.getJoinDate(), trainer.getDesignation(),

@@ -1,6 +1,8 @@
 package com.student.util;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -8,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -18,6 +21,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -32,8 +36,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Base64Utils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.opencsv.CSVParser;
@@ -92,14 +99,14 @@ public class CSVHelper {
 		return studentDtoList;
 	}
 
-	public static boolean validateCSVFile(MultipartFile file, List<String> Header) {
+	public static boolean validateCSVFile(MultipartFile file, String[] Header) {
 
 		if (hasCSVFormat(file)) {
 			try {
 				CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()));
 				String[] headerList = reader.readNext();
 				if (headerList != null) {
-					if (Arrays.asList(headerList).containsAll(Header)) {
+					if (Arrays.asList(headerList).containsAll(Arrays.asList(Header))) {
 						return true;
 					}
 				}
@@ -141,15 +148,14 @@ public class CSVHelper {
 
 	public static void exportStudentList(HttpServletResponse response, List<StudentCsvDto> studentList) {
 		Date date = new Date();
-		String fileName = "student_"+df.format(date)+".csv";
+		String fileName = "student_" + df.format(date) + ".csv";
 		response.setContentType("text/csv");
-		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName);
+		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
-		List<String> headerList = ConfigData.StudentCSVHeaderError;
+		String[] headers = ConfigData.StudentCSVHeaderError;
 		CSVWriter csvWriter;
 		try {
 			csvWriter = new CSVWriter(response.getWriter());
-			String[] headers = (String[]) headerList.toArray();
 			csvWriter.writeNext(headers); // write header
 			for (StudentCsvDto student : studentList) {
 				csvWriter.writeNext(new String[] { student.getId(), student.getName(), student.getCid(),
@@ -165,27 +171,24 @@ public class CSVHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-		
-		
+
 	}
-	
+
 	public static void exportCourseList(HttpServletResponse response, List<CourseCsvDto> courseList) {
 		Date date = new Date();
-		String fileName = "course_"+df.format(date)+".csv";
+		String fileName = "course_" + df.format(date) + ".csv";
 		response.setContentType("text/csv");
-		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName);
+		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
-		List<String> headerList = ConfigData.CourseCSVExportHeader;
+		String[] headers = ConfigData.CourseCSVExportHeader;
 		CSVWriter csvWriter;
 		try {
 			csvWriter = new CSVWriter(response.getWriter());
-			String[] headers = (String[]) headerList.toArray();
 			csvWriter.writeNext(headers); // write header
 			for (CourseCsvDto course : courseList) {
 				csvWriter.writeNext(new String[] { course.getCourseId(), course.getCourseName(), course.getStatus(),
-						 course.getCourseLevel(),course.getStartDate(), course.getEndDate(), course.getCohortSizeMale(), course.getCohortSizeFemale(),
-						 course.getBatchNo(), course.getTrainingLoaction(),});
+						course.getCourseLevel(), course.getStartDate(), course.getEndDate(), course.getCohortSizeMale(),
+						course.getCohortSizeFemale(), course.getBatchNo(), course.getTrainingLoaction(), });
 			}
 			csvWriter.close();
 		} catch (IOException e) {
@@ -193,18 +196,17 @@ public class CSVHelper {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void exportTrainerList(HttpServletResponse response, List<TrainerCsvDto> trainerList) {
 		Date date = new Date();
-		String fileName = "trainer_"+df.format(date)+".csv";
+		String fileName = "trainer_" + df.format(date) + ".csv";
 		response.setContentType("text/csv");
-		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+fileName);
+		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
-		List<String> headerList = ConfigData.TrainerCSVHeader;
+		String[] headers = ConfigData.TrainerCSVHeader;
 		CSVWriter csvWriter;
 		try {
 			csvWriter = new CSVWriter(response.getWriter());
-			String[] headers = (String[]) headerList.toArray();
 			csvWriter.writeNext(headers); // write header
 			for (TrainerCsvDto trainer : trainerList) {
 				csvWriter.writeNext(new String[] { trainer.getTrainerId(), trainer.getTrainerName(),
@@ -217,5 +219,19 @@ public class CSVHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+
+
+	public static String convertByteArrayToBase64String(byte[] byteArr) {
+		String base64String = new String(Base64Utils.decode(byteArr));
+		return base64String;
+
+	}
+
+	public static byte[] convertBase64ToByteArray(String base64) throws UnsupportedEncodingException {
+		byte[] byteArr = Base64Utils.encode(base64.getBytes());
+		return byteArr;
+
 	}
 }

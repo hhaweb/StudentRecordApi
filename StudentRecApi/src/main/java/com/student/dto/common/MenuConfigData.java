@@ -22,5 +22,6 @@ public class MenuConfigData implements Serializable {
 	private String userName;
 	private Long userId;
 	private Long studentId;
+	private String profileImage;
 
 }

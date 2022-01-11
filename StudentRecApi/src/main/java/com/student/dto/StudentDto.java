@@ -1,17 +1,15 @@
 package com.student.dto;
 
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Year;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.student.config.ConfigData;
-import com.student.dto.csv.CourseCsvDto;
-import com.student.entity.Course;
 import com.student.entity.Student;
+import com.student.util.CSVHelper;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,7 +46,7 @@ public class StudentDto {
 	private Long totalRecord;
 	private List<CourseModel> recommandCourses;
 	private List<CourseDto> courseList;
-	
+	private String base64Image;
 	// employment type data
 	private EmploymentDto employment;
 	
@@ -56,6 +54,8 @@ public class StudentDto {
 
 	public StudentDto(Student student) {
 		DateFormat df = new SimpleDateFormat(ConfigData.DateFormat);
+		DateFormat dfWithTime = new SimpleDateFormat(ConfigData.DateFormatWithTime);
+
 		if (student != null) {
 			this.id = student.getId();
 			this.name = student.getName();
@@ -73,21 +73,24 @@ public class StudentDto {
 			this.employmentTypeId = student.getEmploymentTypeId();
 			this.trainingCenterId = student.getTrainingCenterId();
 			this.userId = student.getUserId();
+			if(student.getPhoto() != null) {
+				this.base64Image = CSVHelper.convertByteArrayToBase64String(student.getPhoto());
+			}
 
 			if (student.getDateOfBirth() != null) {
 				this.dateOfBirth = df.format(student.getDateOfBirth());
 			}
 
 			if (student.getCreatedDate() != null) {
-				this.createdDate = df.format(student.getCreatedDate());
+				this.createdDate = dfWithTime.format(student.getCreatedDate());
 			}
 
 			if (student.getUpdatedDate() != null) {
-				this.updatedDate = df.format(student.getUpdatedDate());
+				this.updatedDate = dfWithTime.format(student.getUpdatedDate());
 			}
 
 			if (student.getDeletedDate() != null) {
-				this.deletedDate = df.format(student.getDeletedDate());
+				this.deletedDate = dfWithTime.format(student.getDeletedDate());
 			}
 
 			if (student.getTrainingYear() != 0) {
@@ -97,7 +100,7 @@ public class StudentDto {
 	}
 
 	@JsonIgnore
-	public Student getEntity() throws ParseException {
+	public Student getEntity() throws ParseException, UnsupportedEncodingException {
 		DateFormat df = new SimpleDateFormat(ConfigData.DateFormat);
 		DateFormat dfWithTime = new SimpleDateFormat(ConfigData.DateFormatWithTime);
 
@@ -119,6 +122,10 @@ public class StudentDto {
 		student.setStatus(this.status);
 		student.setBatchNo(this.batchNo);
 		student.setUserId(this.userId);
+		if(this.base64Image !=null) {
+			byte[] image = CSVHelper.convertBase64ToByteArray(this.base64Image);
+			student.setPhoto(image);
+		}
 		
 		if(this.trainingCenterId != null) {
 			student.setTrainingCenterId(this.trainingCenterId);

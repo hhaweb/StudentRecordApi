@@ -63,22 +63,22 @@ public class Course implements Serializable{
 	
 	
 	@Column(name = "cohort_size_male")
-	private Integer cohortSizeMale;
+	private Integer cohortSizeMale = 0;
 	
 	@Column(name = "cohort_size_female")
-	private Integer cohortSizeFemale;
+	private Integer cohortSizeFemale = 0;
 	
 	@Column(name = "number_of_applicants_male")
-	private Integer numberOfApplicantsMale;
+	private Integer numberOfApplicantsMale = 0;
 	
 	@Column(name = "number_of_applicants_female")
-	private Integer numberOfApplicantsFemale;
+	private Integer numberOfApplicantsFemale = 0;
 	
 	@Column(name = "number_of_certified_male")
-	private Integer numberOfCertifiedMale;
+	private Integer numberOfCertifiedMale = 0;
 	
 	@Column(name = "number_of_certified_female")
-	private Integer numberOfCertifiedFemale;
+	private Integer numberOfCertifiedFemale = 0;
 	
 	@Column(name = "batch_no")
 	private String batchNo;

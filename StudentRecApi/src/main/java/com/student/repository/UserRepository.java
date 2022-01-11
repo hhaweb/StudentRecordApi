@@ -20,7 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	@Query(value = "select u from User u where u.id =:id or u.userName like %:userName%")
 	List<User> getUserByPager(@Param("id") Long id, @Param("userName") String userName,  Pageable page);
 	
-	@Query(nativeQuery =true,value = "select count(*) from User")
+	@Query(nativeQuery =true,value = "select count(*) from user")
 	Long getTotalRecord();
 	
 }

@@ -1,5 +1,6 @@
 package com.student.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,28 +48,27 @@ public class StudentServiceImpl implements StudentService {
 
 	@Autowired
 	private EmploymentRepository employmentRepo;
-	
+
 	@Autowired
 	private UserRepository userRepo;
 	@Autowired
 	private CourseRepository courseRepo;
-
 
 	@Override
 	public StudentDto getStudentById(Long id) {
 		Student student = studentRepo.findById(id).orElse(null);
 		if (student == null) {
 			return null;
-		}else {
+		} else {
 			StudentDto studentDto = new StudentDto(student);
 			Employment employment = employmentRepo.findByCid(student.getCid()).orElse(null);
-			if(employment != null) {
+			if (employment != null) {
 				EmploymentDto employmentDto = new EmploymentDto(employment);
 				studentDto.setEmployment(employmentDto);
 			}
 			return studentDto;
 		}
-		
+
 	}
 
 	@Override
@@ -76,28 +76,27 @@ public class StudentServiceImpl implements StudentService {
 		List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
 		Long totalRecord = (long) 0;
 		Long id = null;
-		if(CSVHelper.isNumeric(searchDto.getSearchKeyword())) {
-			 id = Long.parseLong(searchDto.getSearchKeyword());
+		if (CSVHelper.isNumeric(searchDto.getSearchKeyword())) {
+			id = Long.parseLong(searchDto.getSearchKeyword());
 		}
-		if(searchDto.getSearchKeyword() != null) {
+		if (searchDto.getSearchKeyword() != null) {
 			totalRecord = studentRepo.getTotalRecordWithFilter(id, searchDto.getSearchKeyword());
 		} else {
 			totalRecord = studentRepo.getTotalRecord();
 		}
-		
-		
+
 		int pageNo = searchDto.getRowOffset();
 		int pageSize = (int) (searchDto.isExport == true ? totalRecord : searchDto.getRowsPerPage());
 		String sortBy = searchDto.getSortName();
 		Pageable paging = PageRequest.of(pageNo, pageSize,
 				searchDto.getSortType() == 1 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending());
 		List<Student> studentList = new ArrayList<Student>();
-		
+
 		if (searchDto.getSearchKeyword() != null) {
-			if(CSVHelper.isNumeric(searchDto.getSearchKeyword())) {
-				 id = Long.parseLong(searchDto.getSearchKeyword());
+			if (CSVHelper.isNumeric(searchDto.getSearchKeyword())) {
+				id = Long.parseLong(searchDto.getSearchKeyword());
 			}
-			studentList = studentRepo.getStudentByPager(id,searchDto.getSearchKeyword(),paging);
+			studentList = studentRepo.getStudentByPager(id, searchDto.getSearchKeyword(), paging);
 		} else {
 			studentList = studentRepo.findAll(paging).toList();
 		}
@@ -115,10 +114,10 @@ public class StudentServiceImpl implements StudentService {
 	private void saveUser(String userName, String email) {
 		Role studentRole = roleRepo.findByName(ERole.ROLE_STUDENT).orElse(null);
 		String userEmail = null;
-		if(email != null && !email.isEmpty()) {
+		if (email != null && !email.isEmpty()) {
 			userEmail = email;
 		}
-		User user = new User(userName, userEmail,null , new Date(), new Date(), studentRole);
+		User user = new User(userName, userEmail, null, new Date(), new Date(), studentRole);
 		userRepo.save(user);
 	}
 
@@ -137,37 +136,54 @@ public class StudentServiceImpl implements StudentService {
 			return new GenericResponse(false, "Did is empty");
 		}
 
-		if (studentRepo.isExistCidNumberById(studentDto.getCid(), studentDto.getId())) {
-			return new GenericResponse(false, "Cid is already exist");
+		if (studentDto.getId() != null && studentDto.getId() != 0) {
+			if (studentRepo.isExistCidNumberById(studentDto.getCid(), studentDto.getId())) {
+				return new GenericResponse(false, "Cid is already exist");
+			}
+
+			if (studentRepo.isExistDidNumberById(studentDto.getDid(), studentDto.getId())) {
+				return new GenericResponse(false, "Did is already exist");
+			}
+		} else {
+			if (studentRepo.isExistCidNumber(studentDto.getCid())) {
+				return new GenericResponse(false, "Cid is already exist");
+			}
+
+			if (studentRepo.isExistDidNumber(studentDto.getDid())) {
+				return new GenericResponse(false, "Did is already exist");
+			}
 		}
 
-		if (studentRepo.isExistDidNumberById(studentDto.getDid(), studentDto.getId())) {
-			return new GenericResponse(false, "Did is already exist");
-		}
-
-		
 		Student saveObj = null;
 		try {
-			Student student = studentDto.getEntity();
-			
+			Student student = null;
+			try {
+				student = studentDto.getEntity();
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
 			if (student.getId() == null || student.getId() == 0) {
 				Long maxId = studentRepo.getStudentMaxId().orElse((long) 0);
-				student.setId(maxId+ 1); // set student id
+				student.setId(maxId + 1); // set student id
 				String userName = studentDto.getName() + "-" + studentDto.getCid();
-				if(!userRepo.existsByUserName(userName)) {
+				if (!userRepo.existsByUserName(userName)) {
 					saveUser(userName, student.getEmail());
 				}
 			}
 			EmploymentDto employmentDto = studentDto.getEmployment();
-			employmentDto.setCid(studentDto.getCid());
-			
-			if(employmentDto != null) {
+			if (employmentDto != null) {
+				employmentDto.setCid(studentDto.getCid());
+			}
+			if (employmentDto != null) {
 				employmentDto.setCid(studentDto.getCid());
 				Employment employment = employmentDto.getEntity();
 				employmentRepo.save(employment);
 			}
-			saveObj = studentRepo.saveAndFlush(student);
 			
+			saveObj = studentRepo.saveAndFlush(student);
+
 			saveObj = studentRepo.saveAndFlush(student);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -180,7 +196,7 @@ public class StudentServiceImpl implements StudentService {
 	public StudentDto getStudentByCid(String cid) {
 		StudentDto studentDto = null;
 		Student student = studentRepo.findByCid(cid).orElse(null);
-		if(student!= null) {
+		if (student != null) {
 			studentDto = new StudentDto(student);
 		}
 		return studentDto;
@@ -189,7 +205,7 @@ public class StudentServiceImpl implements StudentService {
 	@Override
 	public List<StudentDto> getStudentByCourseId(String courseId) {
 		// TODO Auto-generated method stub
-		 List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
+		List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
 		List<Student> studentList = studentRepo.getStudentByCourseId(courseId);
 		if (studentList != null && studentList.size() > 0) {
 			for (Student student : studentList) {
@@ -202,9 +218,14 @@ public class StudentServiceImpl implements StudentService {
 	@Override
 	public GenericResponse deleteStudent(Long studentId) {
 		Student student = studentRepo.findById(studentId).orElse(null);
-		if(student != null) {
-		 courseRepo.deleteByCid(student.getCid());
-		 studentRepo.delete(student);
+		if (student != null) {
+			String userName = student.getName()+"-"+student.getCid();
+			User user = userRepo.findByUserName(userName).orElse(null);
+			if(user !=null) {
+				userRepo.delete(user);
+			}
+			courseRepo.deleteBycId(student.getCid());
+			studentRepo.delete(student);
 		}
 		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
 	}

@@ -72,7 +72,12 @@ public class CourseDto {
 		course.setCourseId(this.courseId);
 		course.setCourseName(this.courseName);
 		
-		
+		course.setNumberOfApplicantsFemale(this.numberOfApplicantsFemale);
+		course.setNumberOfApplicantsMale(this.numberOfApplicantsMale);
+		course.setCohortSizeFemale(this.cohortSizeFemale);
+		course.setCohortSizeMale(this.cohortSizeMale);
+		course.setNumberOfCertifiedFemale(this.numberOfCertifiedFemale);
+		course.setNumberOfCertifiedMale(this.numberOfCertifiedMale);
 		
 		course.setStatus(this.status);
 		course.setSector(this.sector);
@@ -107,7 +112,6 @@ public class CourseDto {
 			
 			this.numberOfCertifiedFemale = course.getNumberOfCertifiedFemale();
 			this.numberOfCertifiedMale = course.getNumberOfCertifiedMale();
-			
 			
 			this.batchNo = course.getBatchNo();
 			this.trainingLoaction = course.getTrainingLoaction();

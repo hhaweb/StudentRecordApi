@@ -6,6 +6,7 @@ import com.student.dto.CourseDto;
 import com.student.dto.CourseModel;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
+import com.student.dto.common.SelectedItem;
 
 public interface CourseService {
 	CourseDto getCourseById(Long id);
@@ -13,4 +14,5 @@ public interface CourseService {
 	List<CourseModel> getCourseListWithPager(SearchDto searchDto);
 	List<CourseDto> getCourseByCid(String cId);
 	List<CourseModel> getRecommendedCourses(String cid);
+	
 }

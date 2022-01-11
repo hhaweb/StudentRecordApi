@@ -9,13 +9,22 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SelectedItem {
 	private String label;
-	private Object value;
+	private String value;
 	private boolean disabled;
-	public SelectedItem(String label, Object value, boolean disabled) {
+	
+	
+	public SelectedItem(String label, String value, boolean disabled) {
 		super();
 		this.label = label;
 		this.value = value;
 		this.disabled = disabled;
+	}
+
+
+	public SelectedItem(String label, String value) {
+		super();
+		this.label = label;
+		this.value = value;
 	}
 	
 	

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +22,10 @@ import com.student.dto.CourseModel;
 import com.student.dto.StudentDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
+import com.student.dto.common.SelectedItem;
 import com.student.dto.csv.StudentCsvDto;
 import com.student.entity.Employment;
+import com.student.service.CommonService;
 import com.student.service.CourseService;
 import com.student.service.StudentService;
 import com.student.util.CSVHelper;
@@ -36,7 +39,12 @@ public class StudentController {
 	StudentService studentService;
 	@Autowired
 	CourseService courseService;
+	@Autowired
+	CommonService commonService;
 
+	@Value("${upload.path}")
+	private String uploadPath;
+	
 	@GetMapping("/get-student-by-id")
 	public StudentDto getStudentById(@RequestParam("studentId") String id) {
 		Long studentId = Long.parseLong(id);
@@ -68,6 +76,18 @@ public class StudentController {
 		}
 	}
 	
+	@GetMapping("/delete-student")
+	public GenericResponse deleteStudent(@RequestParam("studentId") String studentId) {
+		try {
+			Long id = Long.parseLong(studentId);
+			return studentService.deleteStudent(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new GenericResponse(false, ResponseMessage.SERVER_ERROR);// TODO: handle exception
+		}
+	}
+	
+	
 	@PostMapping("export-student-list")
 	public void exportSaleHeaderList(HttpServletResponse response, @RequestBody SearchDto searchDto) {
 		searchDto.isExport = true;
@@ -88,6 +108,14 @@ public class StudentController {
 		List<CourseModel> recommandCourseList = courseService.getRecommendedCourses(studentDto.getCid());
 		studentDto.setCourseList(courseList);
 		studentDto.setRecommandCourses(recommandCourseList);
-		ExcelWriter.exportStudentDetails(response, studentDto);
+		ExcelWriter.exportStudentDetails(response, studentDto, uploadPath);
 	}
+	
+	@GetMapping("student-status")
+	public List<SelectedItem> getStudentStatus() {
+		return commonService.getStudentStatus();
+		
+	}
+	
+
 }

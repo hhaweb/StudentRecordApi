@@ -78,7 +78,7 @@ public class CourseCsvDto {
 	@CsvBindByName(column = "Trainer ID")
 	private String trainerId;
 
-	@CsvBindByName(column = "Student Name")
+	@CsvBindByName(column = "Student Name") 
 	private String studentName;
 
 	@CsvBindByName(column = "CID")

@@ -25,7 +25,7 @@
 			},
 			{
 				"label": "Add Trainer",
-				"icon": "pi pi-fw pi-list",
+				"icon": "pi pi-user-plus",
 				"routerLink": [
 					"/trainer/trainer-detail"
 				]
@@ -34,7 +34,7 @@
 	},
 	{
 		"label": "Course",
-		"icon": "pi pi-users",
+		"icon": "pi pi-book",
 		"items": [
 			{
 				"label": "Course List",

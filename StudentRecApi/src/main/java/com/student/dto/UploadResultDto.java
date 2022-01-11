@@ -1,10 +1,6 @@
 package com.student.dto;
 
-import java.util.List;
 
-import com.student.dto.csv.CourseCsvDto;
-import com.student.dto.csv.StudentCsvDto;
-import com.student.dto.csv.TrainerCsvDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

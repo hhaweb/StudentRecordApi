@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 import com.student.config.ResponseMessage;
 import com.student.dto.CourseDto;
 import com.student.dto.CourseModel;
-import com.student.dto.TrainerDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
+import com.student.dto.common.SelectedItem;
 import com.student.entity.Course;
-import com.student.entity.Trainer;
+import com.student.repository.CommonRepository;
 import com.student.repository.CourseRepository;
 import com.student.repository.StudentRepository;
 import com.student.repository.TrainerRepository;
@@ -32,6 +32,8 @@ public class CourseServiceImpl implements CourseService {
 	private StudentRepository studentRepo;
 	@Autowired
 	private TrainerRepository trainerRepo;
+	@Autowired
+	private CommonRepository commonRepo;
 
 	@Override
 	public CourseDto getCourseById(Long id) {

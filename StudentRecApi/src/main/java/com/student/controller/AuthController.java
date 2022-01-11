@@ -100,7 +100,7 @@ public class AuthController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		MenuConfigData configData = new MenuConfigData();
-		String roleName  = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
+		String roleName = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
 				.collect(Collectors.toList()).get(0);
 		List<Menus> fullMenuList = commonUtils.getMenuItem();
 		List<Menus> roleMenuList = new ArrayList<Menus>();
@@ -122,22 +122,27 @@ public class AuthController {
 				}
 			}
 		}
+		
 		Long studentId = (long) 0;
+		String profileImage = null;
 		String userName = userDetails.getUserName();
-		if(userName.lastIndexOf("-") != -1) {
-			String cid = userName.substring(userName.lastIndexOf("-")+1, userName.length());
+		if (userName.lastIndexOf("-") != -1) {
+			String cid = userName.substring(userName.lastIndexOf("-") + 1, userName.length());
 			StudentDto studentDto = studentService.getStudentByCid(cid);
-			if(studentDto != null) {
+			profileImage = studentDto.getBase64Image() != null ? studentDto.getBase64Image()
+					: studentDto.getAvatar() != null ? studentDto.getAvatar() : null;
+			if (studentDto != null) {
 				studentId = studentDto.getId();
 			}
 		}
-		
 
 		configData.setMenus(roleMenuList);
 		configData.setRouteList(routeList);
 		configData.setRole(roleName);
 		configData.setUserId(userDetails.getId());
 		configData.setStudentId(studentId);
+		configData.setProfileImage(profileImage);
+		configData.setUserName(userName);
 		return configData;
 	}
 
@@ -177,7 +182,7 @@ public class AuthController {
 		List<SelectedItem> itemList = new ArrayList<SelectedItem>();
 		List<Role> roleList = userService.getRole();
 		for (Role role : roleList) {
-			SelectedItem item = new SelectedItem(role.getName().toString(), role.getId(), false);
+			SelectedItem item = new SelectedItem(role.getName().toString(), role.getId().toString(), false);
 			itemList.add(item);
 		}
 		return itemList;

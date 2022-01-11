@@ -3,17 +3,13 @@ package com.student.dto.csv;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Year;
 import java.util.Date;
 
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvDate;
 import com.student.config.ConfigData;
 import com.student.dto.StudentDto;
 import com.student.entity.Student;
-import com.student.entity.User;
 import com.student.util.CSVHelper;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -124,7 +120,7 @@ public class StudentCsvDto {
 		if (CSVHelper.isNumeric(this.trainingYear)) {
 			student.setTrainingYear(Integer.parseInt(this.trainingYear));
 		}
-
+		student.setInDate(new Date());
 		student.setCid(this.cid);
 		student.setDid(this.did);
 		student.setName(this.name);

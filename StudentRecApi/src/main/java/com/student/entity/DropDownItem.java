@@ -35,4 +35,7 @@ public class DropDownItem implements Serializable {
 	@Column(name = "value")
 	private String value;
 	
+	@Column(name = "name")
+	private String name;
+	
 }

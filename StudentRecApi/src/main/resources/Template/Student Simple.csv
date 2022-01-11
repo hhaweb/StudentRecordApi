@@ -1,0 +1,2 @@
+id,name,cid,did,date_of_birth,email,mobile_no,gender,blood_group,marital_status,employment_type_id,avatar,status,user_id,training_center_id,created_at,updated_at,deleted_at,batch_no,training_year
+,Wangay Dorji,1111111,DS(01)1121212,11/10/1976,taymus@gmail.com,77123123,M,AB+,Married,2,https://cdn.aws.desuung.org.bt/avatars/3824.,alive,3824,NULL,NULL,8/18/2021 19:09,NULL,1,NULL

@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -36,7 +37,7 @@ public class Student implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
-//	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = "id")
     private Long id;
 	
@@ -100,5 +101,9 @@ public class Student implements Serializable{
 	
 	@Column(name = "in_date")
 	private Date inDate;
+	
+	@Lob
+	@Column(name = "photo")
+	private byte[] photo;
 	
 }

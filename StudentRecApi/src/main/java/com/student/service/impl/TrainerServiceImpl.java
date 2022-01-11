@@ -15,6 +15,7 @@ import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
 import com.student.dto.common.SelectedItem;
 import com.student.entity.Trainer;
+import com.student.repository.CourseRepository;
 import com.student.repository.TrainerRepository;
 import com.student.service.TrainerService;
 import com.student.util.CSVHelper;
@@ -23,6 +24,8 @@ import com.student.util.CSVHelper;
 public class TrainerServiceImpl implements TrainerService{
 	@Autowired
 	private TrainerRepository trainerRepo;
+	@Autowired
+	private CourseRepository courseRepo;
 	
 
 	@Override
@@ -66,18 +69,28 @@ public class TrainerServiceImpl implements TrainerService{
 	}
 
 	@Override
-	public GenericResponse saveTrainer(TrainerDto courseDto) {
+	public GenericResponse saveTrainer(TrainerDto trainerDto) {
 		GenericResponse response = new GenericResponse();
-		if(courseDto.getTrainerId() == null || courseDto.getTrainerId().isEmpty()) {
+		if(trainerDto.getTrainerId() == null || trainerDto.getTrainerId().isEmpty()) {
 			return new GenericResponse(false, "Trainer Id is empty");
 		}
-		if(courseDto.getTrainerName() == null || courseDto.getTrainerName().isEmpty()) {
+		if(trainerDto.getTrainerName() == null || trainerDto.getTrainerName().isEmpty()) {
 			return new GenericResponse(false, "Trainer name is empty");
+		}
+		
+		if(trainerDto.getId() != null && trainerDto.getId() != 0) {
+			if(trainerRepo.isExistTrainerIdById(trainerDto.getTrainerId(), trainerDto.getId())) {
+				return new GenericResponse(false, "Trainer Id is already exist");
+			}
+		} else {
+			if(trainerRepo.isExistTrainerId(trainerDto.getTrainerId())) {
+				return new GenericResponse(false, "Trainer Id is already exist");
+			}
 		}
 		
 		Trainer saveObj = null;
 		try {
-			Trainer	trainer = courseDto.getEntity();
+			Trainer	trainer = trainerDto.getEntity();
 			saveObj = trainerRepo.saveAndFlush(trainer);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -93,11 +106,14 @@ public class TrainerServiceImpl implements TrainerService{
 	public GenericResponse deleteTrainer(Long id) {
 		GenericResponse response = new GenericResponse();
 		Trainer trainer = trainerRepo.findById(id).orElse(null);
+	
 		if(trainer != null) {
+			courseRepo.updateTrainerIdFromCourse(trainer.getTrainerId());
 			trainerRepo.delete(trainer);
 			response.setStatus(true);
 			response.setMessage("Delete Successfully");
 		} else {
+			response.setStatus(false);
 			response.setMessage("Trainer does not exist");
 		}
 		return response;
