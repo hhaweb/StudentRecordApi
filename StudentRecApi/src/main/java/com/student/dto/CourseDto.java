@@ -3,16 +3,12 @@ package com.student.dto;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.student.config.ConfigData;
 import com.student.entity.Course;
-import com.student.entity.Student;
-import com.student.util.CSVHelper;
+import com.student.util.DateUtil;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,19 +52,15 @@ public class CourseDto {
 	
 //	private TrainerDto trainerDto;
 //	private StudentDto studentDto;
-	
+	@JsonIgnore
 	public Course getEntity() throws ParseException {
-		DateFormat df = new SimpleDateFormat(ConfigData.DateFormat);
 		Course course = new Course();
-		if(this.id != 0 && this.id != null) {
+		if( this.id != null && this.id != 0) {
 			course.setId(this.id);
 		}
-		if(CSVHelper.validateDateFormat(this.startDate, ConfigData.DateFormat)) {
-			course.setStartDate(df.parse(this.startDate));
-		}
-		if(CSVHelper.validateDateFormat(this.endDate, ConfigData.DateFormat)) {
-			course.setEndDate(df.parse(this.endDate));
-		}
+		course.setStartDate(DateUtil.stringToDate(this.startDate));
+		course.setEndDate(DateUtil.stringToDate(this.endDate));
+		
 		course.setCourseId(this.courseId);
 		course.setCourseName(this.courseName);
 		

@@ -116,17 +116,7 @@ public class CSVHelper {
 		}
 		return false;
 	}
-
-	public static boolean validateDateFormat(String dateStr, String format) {
-		DateFormat df = new SimpleDateFormat(format);
-		try {
-			Date d = df.parse(dateStr);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
+	
 	public static boolean isNumeric(String number) {
 		int intValue = 0;
 		try {

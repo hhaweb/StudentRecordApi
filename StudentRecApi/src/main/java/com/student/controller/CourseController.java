@@ -148,6 +148,21 @@ public class CourseController {
 		
 	}
 	
+	@GetMapping("/delete-course")
+	public GenericResponse deleteCourse(@RequestParam("courseId") String courseId) {// id from course table not courseId
+		GenericResponse response = new GenericResponse();
+		try {
+			Long id = Long.parseLong(courseId);
+			
+			response = courseService.deleteCourse(id);
+		}catch (Exception e) {
+			e.printStackTrace();
+			response.setMessage(ResponseMessage.SERVER_ERROR);
+		}
+		return response;
+		
+	}
+	
 	@GetMapping("/get-recommend-courses")
 	public List<CourseModel> getRecommendedCourses(@RequestParam("cid") String cid) {
 		
@@ -161,7 +176,7 @@ public class CourseController {
 	}
 	
 	@GetMapping("export-course-detail")
-	public void exportSaleHeaderList(HttpServletResponse response, @RequestParam("courseId") String id) {
+	public void exportSaleHeaderList(HttpServletResponse response, @RequestParam("courseId") String id) { // id from course table not courseId
 		Long courseId = Long.parseLong(id);
 		CourseDto courseDto = courseService.getCourseById(courseId);
 		List<StudentDto> studentList = studentService.getStudentByCourseId(courseDto.getCourseId());

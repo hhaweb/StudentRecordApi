@@ -28,12 +28,6 @@ import com.student.util.CSVHelper;
 public class CourseServiceImpl implements CourseService {
 	@Autowired
 	private CourseRepository courseRepo;
-	@Autowired
-	private StudentRepository studentRepo;
-	@Autowired
-	private TrainerRepository trainerRepo;
-	@Autowired
-	private CommonRepository commonRepo;
 
 	@Override
 	public CourseDto getCourseById(Long id) {
@@ -104,6 +98,15 @@ public class CourseServiceImpl implements CourseService {
 		
 		List<CourseModel> recommendedCourses = courseRepo.getRecommendCourses(courseIdList,sectorList) ;
 		return recommendedCourses;
+	}
+
+	@Override
+	public GenericResponse deleteCourse(Long id) {
+		Course course = courseRepo.findById(id).orElse(null);
+		if(course != null) {
+			courseRepo.deleteCourseByCourseId(course);
+		}
+		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
 	}
 
 }

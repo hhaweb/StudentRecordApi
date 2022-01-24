@@ -1,12 +1,15 @@
 package com.student.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,12 +25,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import com.student.service.impl.UserDetailsServiceImpl;
+
+import io.jsonwebtoken.Jwts;
 
 import org.slf4j.Logger;
 @Configuration
@@ -37,6 +42,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
+	
+
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -99,7 +106,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				 .antMatchers("/api/upload/**").access("hasRole('ROLE_SUPER_ADMIN')")
 				 
 				.anyRequest().authenticated();
-
+//		 http
+//         .logout(logout -> logout
+//           .logoutUrl("/api/auth/logout")
+//           .addLogoutHandler((request, response, auth) -> {
+//        	   JwtAuthenticationFilter filter = authenticationJwtTokenFilter();
+//        	   	String authToken = filter.parseJwt(request);
+//      			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken).getBody().setExpiration(new Date(2020,1,1));
+//  
+//      			Date dd = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken).getBody().getExpiration();
+//      			Date ss = new Date();
+//      			String aa = "a";
+//           })
+//         );
 		// Add JWT token filter
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 	}

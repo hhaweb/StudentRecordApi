@@ -5,24 +5,15 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,6 +44,7 @@ import com.student.repository.UserRepository;
 import com.student.service.UploadService;
 import com.student.util.CSVHelper;
 import com.student.util.CommonUtil;
+import com.student.util.DateUtil;
 
 @Service
 public class UploadServiceImpl implements UploadService {
@@ -68,9 +60,6 @@ public class UploadServiceImpl implements UploadService {
 
 	@Autowired
 	private CommonUtil commonUtil;
-
-	@Autowired
-	private PasswordEncoder encoder;
 
 	@Autowired
 	private UserRepository userRepo;
@@ -112,6 +101,15 @@ public class UploadServiceImpl implements UploadService {
 			errorMessage += ", did is empty";
 		}
 
+		if (!DateUtil.validateDateFormat(student.getDateOfBirth())) {
+			errorMessage += ", invalid date of birth date format";
+		} else {
+			int age = DateUtil.getDiffYears(DateUtil.stringToDate(student.getDateOfBirth()), new Date());
+			if(age < 16) {
+				errorMessage += ", Date Of birth must be above 16 years old";
+			}
+		}
+				
 		// valid date format
 //		if (!CSVHelper.validateDateFormat(student.getDateOfBirth(), ConfigData.DateFormat)
 //				&& !student.getDateOfBirth().equalsIgnoreCase("NULL")) {
@@ -219,15 +217,16 @@ public class UploadServiceImpl implements UploadService {
 				&& !CSVHelper.isNumeric(courseCsvDto.getNumberOfCertifiedMale())) {
 			errorMessage += ", invalid number of certified male";
 		}
+	
 		if (courseCsvDto.getStartDate() == null) {
 			errorMessage += ", start date is empty";
-		} else if (!CSVHelper.validateDateFormat(courseCsvDto.getStartDate(), ConfigData.DateFormat)) {
+		} else if (!DateUtil.validateDateFormat(courseCsvDto.getStartDate())) {
 			errorMessage += ", invalid start date format";
 		}
 
 		if (courseCsvDto.getEndDate() == null) {
 			errorMessage += ", end date is empty";
-		} else if (!CSVHelper.validateDateFormat(courseCsvDto.getEndDate(), ConfigData.DateFormat)) {
+		} else if (!DateUtil.validateDateFormat(courseCsvDto.getEndDate())) {
 			errorMessage += ", invalid end date format";
 		}
 

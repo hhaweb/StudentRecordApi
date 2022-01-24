@@ -9,6 +9,13 @@
 				"routerLink": [
 					"/student/student-list"
 				]
+			},
+			{
+				"label": "Add Student",
+				"icon": "pi pi-user-plus",
+				"routerLink": [
+					"/student/student-profile"
+				]
 			}
 		]
 	},
@@ -41,6 +48,13 @@
 				"icon": "pi pi-fw pi-list",
 				"routerLink": [
 					"/course/course-list"
+				]
+			}, 
+			{
+				"label": "Add Course",
+				"icon": "pi pi-wallet",
+				"routerLink": [
+					"/course/course-info"
 				]
 			}
 		]

@@ -3,21 +3,12 @@ package com.student.dto.csv;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 import com.opencsv.bean.CsvBindByName;
-import com.student.config.ConfigData;
-import com.student.dto.CourseDto;
 import com.student.dto.CourseModel;
 import com.student.entity.Course;
-import com.student.entity.Student;
-import com.student.entity.Trainer;
 import com.student.util.CSVHelper;
+import com.student.util.DateUtil;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -102,7 +93,6 @@ public class CourseCsvDto {
 //	private String trainerAffiliation;
 
 	public Course getEntity() throws ParseException {
-		DateFormat df = new SimpleDateFormat(ConfigData.DateFormat);
 		Course course = new Course();
 
 		if (CSVHelper.isNumeric(this.numberOfApplicantsFemale)) {
@@ -134,15 +124,7 @@ public class CourseCsvDto {
 		if (!this.trainerId.equalsIgnoreCase("NULL") && !this.trainerId.isEmpty()) {
 			course.setTrainerId(this.trainerId);
 		}
-
-		if (CSVHelper.validateDateFormat(this.startDate, ConfigData.DateFormat)) {
-			course.setStartDate(df.parse(this.startDate));
-		}
-
-		if (CSVHelper.validateDateFormat(this.endDate, ConfigData.DateFormat)) {
-			course.setEndDate(df.parse(this.endDate));
-		}
-
+		
 		if (!this.courseId.equalsIgnoreCase("NULL") && !this.courseId.isEmpty()) {
 			course.setCourseId(this.courseId);
 		}
@@ -178,6 +160,8 @@ public class CourseCsvDto {
 		if (!this.dId.equalsIgnoreCase("NULL") && !this.dId.isEmpty()) {
 			course.setDId(this.dId);
 		}
+		course.setStartDate(DateUtil.stringToDate(this.startDate));
+		course.setEndDate(DateUtil.stringToDate(this.endDate));
 		return course;
 	}
 
@@ -189,8 +173,12 @@ public class CourseCsvDto {
 	//	this.sector = courseDto.getSector();
 		this.courseLevel = courseDto.getCourseLevel();
 		this.duration = courseDto.getDuration();
-		this.startDate = df.format(courseDto.getStartDate());
-		this.endDate = df.format(courseDto.getEndDate());
+		if(courseDto.getStartDate() != null) {
+			this.startDate = df.format(courseDto.getStartDate());
+		}
+		if(courseDto.getEndDate() != null) {
+			this.endDate = df.format(courseDto.getEndDate());
+		}
 		this.cohortSizeMale = courseDto.getCohortSizeMale() != null ? courseDto.getCohortSizeMale().toString() : null;
 		this.cohortSizeFemale = courseDto.getCohortSizeFemale() != null ? courseDto.getCohortSizeFemale().toString()
 				: null;

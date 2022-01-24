@@ -1,15 +1,12 @@
 package com.student.dto.csv;
-
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import com.opencsv.bean.CsvBindByName;
-import com.student.config.ConfigData;
 import com.student.dto.StudentDto;
 import com.student.entity.Student;
 import com.student.util.CSVHelper;
+import com.student.util.DateUtil;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -84,25 +81,14 @@ public class StudentCsvDto {
 	private boolean isHaveError;
 
 	public Student getEntity() throws ParseException {
-		DateFormat timeForamt = new SimpleDateFormat(ConfigData.DateFormatWithTime);
-		DateFormat dateFormat = new SimpleDateFormat(ConfigData.DateFormat);
 		Student student = new Student();
 		if (this.id != null && !this.id.isEmpty() && CSVHelper.isNumeric(this.id)) {
 			student.setId(Long.parseLong(this.id));
 		}
-		if (CSVHelper.validateDateFormat(this.createdAt, ConfigData.DateFormatWithTime)) {
-			student.setCreatedDate(timeForamt.parse(this.createdAt));
-		}
-		if (CSVHelper.validateDateFormat(this.updatedAt, ConfigData.DateFormatWithTime)) {
-			student.setUpdatedDate(timeForamt.parse(this.updatedAt));
-		}
-		if (CSVHelper.validateDateFormat(this.deletedAt, ConfigData.DateFormatWithTime)) {
-			student.setDeletedDate(timeForamt.parse(this.deletedAt));
-		}
-
-		if (CSVHelper.validateDateFormat(this.dateOfBirth, ConfigData.DateFormat)) {
-			student.setDateOfBirth(dateFormat.parse(this.dateOfBirth));
-		}
+		student.setCreatedDate(DateUtil.stringToDate(this.createdAt));
+		student.setUpdatedDate(DateUtil.stringToDate(this.updatedAt));
+		student.setDeletedDate(DateUtil.stringToDate(this.deletedAt));
+		student.setDateOfBirth(DateUtil.stringToDate(this.dateOfBirth));
 
 		if (CSVHelper.isNumeric(this.employmentTypeId)) {
 			student.setEmploymentTypeId(Long.parseLong(this.employmentTypeId));

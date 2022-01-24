@@ -34,6 +34,7 @@ import com.student.repository.UserRepository;
 import com.student.service.StudentService;
 import com.student.util.CSVHelper;
 import com.student.util.CommonUtil;
+import com.student.util.DateUtil;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -73,6 +74,8 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public List<StudentDto> getStudentWithPager(SearchDto searchDto) {
+
+		
 		List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
 		Long totalRecord = (long) 0;
 		Long id = null;
@@ -203,15 +206,26 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public List<StudentDto> getStudentByCourseId(String courseId) {
+	public List<StudentDto> getStudentByCourseId(String courseId) { // id from course table not courseId
 		// TODO Auto-generated method stub
 		List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
-		List<Student> studentList = studentRepo.getStudentByCourseId(courseId);
-		if (studentList != null && studentList.size() > 0) {
-			for (Student student : studentList) {
-				studentDtoList.add(new StudentDto(student));
+		List<String> cidList = new ArrayList<String>();
+		Long id = Long.parseLong(courseId);
+		Course course = courseRepo.findById(id).orElse(null);
+		
+		
+		if(course != null) {
+			List<Course> courseList = courseRepo.findByCourseIdAndCourseNameAndBatchNoAndTrainingLoaction(course.getCourseId(), course.getCourseName(), 
+					course.getBatchNo(), course.getTrainingLoaction());
+			courseList.forEach(a -> cidList.add(a.getCId()));
+			List<Student> studentList = studentRepo.findByCidIn(cidList);
+			if (studentList != null && studentList.size() > 0) {
+				for (Student student : studentList) {
+					studentDtoList.add(new StudentDto(student));
+				}
 			}
 		}
+	
 		return studentDtoList;
 	}
 

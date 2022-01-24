@@ -5,15 +5,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.student.config.ConfigData;
 import com.student.entity.Trainer;
-import com.student.util.CSVHelper;
+import com.student.util.DateUtil;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,7 +39,6 @@ public class TrainerDto {
 	
 	@JsonIgnore
 	public Trainer getEntity() throws ParseException {
-		DateFormat df = new SimpleDateFormat(ConfigData.DateFormat);
 		Trainer trainer = new Trainer();
 		if(this.id != null && this.id != 0) {
 			trainer.setId(this.id);
@@ -52,18 +46,10 @@ public class TrainerDto {
 		} else {
 			trainer.setCreatedDate(new Date());
 		}
-		if(CSVHelper.validateDateFormat(this.createdDate, ConfigData.DateFormat)) {
-			trainer.setCreatedDate(df.parse(this.createdDate));
-		}
-		
-		if(CSVHelper.validateDateFormat(this.updatedDate, ConfigData.DateFormat)) {
-			trainer.setUpdatedDate(df.parse(this.updatedDate));
-		}
-		
-		if(CSVHelper.validateDateFormat(this.joinDate, ConfigData.DateFormat)) {
-			trainer.setJoinDate(df.parse(this.joinDate));
-		}
-		
+		trainer.setCreatedDate(DateUtil.stringToDate(this.createdDate));
+		trainer.setUpdatedDate(DateUtil.stringToDate(this.updatedDate));
+		trainer.setJoinDate(DateUtil.stringToDate(this.joinDate));
+
 		trainer.setTrainerId(this.trainerId);
 		trainer.setTrainerName(this.trainerName);
 		trainer.setGender(this.gender);

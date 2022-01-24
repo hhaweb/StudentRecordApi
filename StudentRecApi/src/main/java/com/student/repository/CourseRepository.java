@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.student.dto.CourseModel;
 import com.student.entity.Course;
+import com.student.entity.Student;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
 	@Query(nativeQuery = true, value = "SELECT getCourseTotalRecords(?1, ?2)")
@@ -40,4 +41,15 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 	@Modifying
 	@Query("update Course c set c.trainerId= null where c.trainerId=:trainerId ")
 	void updateTrainerIdFromCourse(@Param("trainerId") String trainerId);
+	
+	
+	@Transactional
+	@Modifying
+	@Query(value = "delete from Course c where c.courseId=:#{#course.courseId} "
+			+ "and c.courseName=:#{#course.courseName} and c.batchNo=:#{#course.batchNo} "
+			+ "and c.trainingLoaction=:#{#course.trainingLoaction} ")
+	void  deleteCourseByCourseId(@Param("course")Course course);
+	
+	List<Course> findByCourseIdAndCourseNameAndBatchNoAndTrainingLoaction(String courseId, String courseName, String batchNo, String trainingLoaction);
+
 }
