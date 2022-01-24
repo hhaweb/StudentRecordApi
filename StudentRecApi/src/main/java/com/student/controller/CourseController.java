@@ -179,7 +179,7 @@ public class CourseController {
 	public void exportSaleHeaderList(HttpServletResponse response, @RequestParam("courseId") String id) { // id from course table not courseId
 		Long courseId = Long.parseLong(id);
 		CourseDto courseDto = courseService.getCourseById(courseId);
-		List<StudentDto> studentList = studentService.getStudentByCourseId(courseDto.getCourseId());
+		List<StudentDto> studentList = studentService.getStudentByCourseId(courseDto.getId());
 		courseDto.setStudentList(studentList);	
 		ExcelWriter.exportCourseDetail(response, courseDto, uploadPath);
 	}

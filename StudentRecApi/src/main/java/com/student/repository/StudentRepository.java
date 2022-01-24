@@ -33,13 +33,13 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 	@Query(nativeQuery = true, value = "select count(*) from student")
 	Long getTotalRecord();
 
-	@Query(value = "select count(s) from Student s  where s.id =:id or s.name like %:name% or s.cid like %:name%")
-	Long getTotalRecordWithFilter(@Param("id") Long id, @Param("name") String studentName);
+	@Query(value = "select count(s) from Student s  where s.id =:id or s.name like %:name% or s.cid=:cid")
+	Long getTotalRecordWithFilter(@Param("id") Long id, @Param("name") String studentName, @Param("cid") String cid);
 
 	Optional<Student> findByUserId(Long userId);
 
-	@Query(value = "select s from Student s where s.id =:id or s.name like %:name% or s.cid like %:name%")
-	List<Student> getStudentByPager(@Param("id") Long id, @Param("name") String studentName, Pageable page);
+	@Query(value = "select s from Student s where s.id =:id or s.name like %:name% or s.cid=:cid")
+	List<Student> getStudentByPager(@Param("id") Long id, @Param("name") String studentName, @Param("cid") String cid, Pageable page);
 
 	@Query(value = "select s from Student s where s.cid in (select c.cId from Course c where c.courseId=:courseId "
 			+ "and c.courseName=:courseName and c.batchNo=:batchNo "

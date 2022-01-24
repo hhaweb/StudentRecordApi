@@ -4,15 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.student.config.ERole;
@@ -33,17 +31,11 @@ import com.student.repository.StudentRepository;
 import com.student.repository.UserRepository;
 import com.student.service.StudentService;
 import com.student.util.CSVHelper;
-import com.student.util.CommonUtil;
-import com.student.util.DateUtil;
 
 @Service
 public class StudentServiceImpl implements StudentService {
 	@Autowired
 	private StudentRepository studentRepo;
-	@Autowired
-	private CommonUtil commonUtil;
-	@Autowired
-	private PasswordEncoder encoder;
 	@Autowired
 	private RoleRepository roleRepo;
 
@@ -74,8 +66,6 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public List<StudentDto> getStudentWithPager(SearchDto searchDto) {
-
-		
 		List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
 		Long totalRecord = (long) 0;
 		Long id = null;
@@ -83,11 +73,10 @@ public class StudentServiceImpl implements StudentService {
 			id = Long.parseLong(searchDto.getSearchKeyword());
 		}
 		if (searchDto.getSearchKeyword() != null) {
-			totalRecord = studentRepo.getTotalRecordWithFilter(id, searchDto.getSearchKeyword());
+			totalRecord = studentRepo.getTotalRecordWithFilter(id, searchDto.getSearchKeyword(), searchDto.getSearchKeyword());
 		} else {
 			totalRecord = studentRepo.getTotalRecord();
 		}
-
 		int pageNo = searchDto.getRowOffset();
 		int pageSize = (int) (searchDto.isExport == true ? totalRecord : searchDto.getRowsPerPage());
 		String sortBy = searchDto.getSortName();
@@ -99,7 +88,7 @@ public class StudentServiceImpl implements StudentService {
 			if (CSVHelper.isNumeric(searchDto.getSearchKeyword())) {
 				id = Long.parseLong(searchDto.getSearchKeyword());
 			}
-			studentList = studentRepo.getStudentByPager(id, searchDto.getSearchKeyword(), paging);
+			studentList = studentRepo.getStudentByPager(id, searchDto.getSearchKeyword(), searchDto.getSearchKeyword(), paging);
 		} else {
 			studentList = studentRepo.findAll(paging).toList();
 		}
@@ -206,11 +195,10 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public List<StudentDto> getStudentByCourseId(String courseId) { // id from course table not courseId
+	public List<StudentDto> getStudentByCourseId(Long id) { // id from course table not courseId
 		// TODO Auto-generated method stub
 		List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
 		List<String> cidList = new ArrayList<String>();
-		Long id = Long.parseLong(courseId);
 		Course course = courseRepo.findById(id).orElse(null);
 		
 		

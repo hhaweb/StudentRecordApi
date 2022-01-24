@@ -118,9 +118,9 @@ public class CSVHelper {
 	}
 	
 	public static boolean isNumeric(String number) {
-		int intValue = 0;
+		Long intValue = (long) 0;
 		try {
-			intValue = Integer.parseInt(number);
+			intValue = Long.parseLong(number);
 			return true;
 		} catch (NumberFormatException e) {
 			return false;

@@ -54,9 +54,10 @@ public class StudentController {
 	}
 	
 	@GetMapping("/get-student-by-courseId")
-	public List<StudentDto> getStudentByCourseId(@RequestParam("courseId") String courseId) {
+	public List<StudentDto> getStudentByCourseId(@RequestParam("courseId") String courseId) { // id from course table not courseId
 		List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
-		studentDtoList = studentService.getStudentByCourseId(courseId);
+		Long id = Long.parseLong(courseId);
+		studentDtoList = studentService.getStudentByCourseId(id);
 		return studentDtoList;
 
 	}

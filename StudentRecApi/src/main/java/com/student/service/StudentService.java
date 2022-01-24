@@ -14,6 +14,6 @@ public interface StudentService {
 	List<StudentDto> getStudentWithPager(SearchDto searchDto);
 	GenericResponse saveStudent(StudentDto studentDto);
 	GenericResponse deleteStudent(Long studentId);
-	List<StudentDto> getStudentByCourseId(String courseId);
+	List<StudentDto> getStudentByCourseId(Long id);
 
 }
