@@ -115,7 +115,6 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public GenericResponse saveStudent(StudentDto studentDto) {
-
 		if (studentDto.getName() == null || studentDto.getName().isEmpty()) {
 			return new GenericResponse(false, "Name is empty");
 		}
@@ -173,9 +172,6 @@ public class StudentServiceImpl implements StudentService {
 				Employment employment = employmentDto.getEntity();
 				employmentRepo.save(employment);
 			}
-			
-			saveObj = studentRepo.saveAndFlush(student);
-
 			saveObj = studentRepo.saveAndFlush(student);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

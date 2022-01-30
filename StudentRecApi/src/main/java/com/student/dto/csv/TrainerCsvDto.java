@@ -15,6 +15,7 @@ import com.student.config.ConfigData;
 import com.student.dto.TrainerDto;
 import com.student.entity.Trainer;
 import com.student.util.CSVHelper;
+import com.student.util.DateUtil;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -68,7 +69,6 @@ public class TrainerCsvDto {
 	
 	public Trainer getEntity() throws ParseException {
 		Trainer trainer = new Trainer();
-		DateFormat df = new SimpleDateFormat(ConfigData.DateFormat);
 		trainer.setCreatedDate(new Date());
 		trainer.setUpdatedDate(new Date());
 
@@ -84,9 +84,7 @@ public class TrainerCsvDto {
 			trainer.setGender(this.gender);
 		}
 		
-		if(!this.joinDate.equalsIgnoreCase("NULL") && !this.joinDate.isEmpty()) {
-			trainer.setJoinDate(df.parse(this.joinDate));
-		}
+		trainer.setJoinDate(DateUtil.stringToDate(this.joinDate));
 		
 		if(!this.designation.equalsIgnoreCase("NULL") && !this.designation.isEmpty()) {
 			trainer.setDesignation(this.designation);

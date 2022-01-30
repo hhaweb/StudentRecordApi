@@ -93,6 +93,12 @@ public class UploadServiceImpl implements UploadService {
 //			errorMessage += ", invalid id";
 //		}
 
+		if (student.getCid().equalsIgnoreCase("11608003843")) {
+			System.out.print("enter ");
+			String aa = student.getMartialStatus().trim();
+			System.out.print("enter " + aa);
+		}
+
 		if (student.getCid() == null) {
 			errorMessage += "cid is empty";
 		}
@@ -101,15 +107,52 @@ public class UploadServiceImpl implements UploadService {
 			errorMessage += ", did is empty";
 		}
 
+		if (student.getGender() != null && student.getGender().equalsIgnoreCase("NULL")
+				&& !student.getGender().isEmpty()) {
+			String gender = student.getGender().trim();
+			Long count = ConfigData.Gender_List.stream().filter(a -> a.equalsIgnoreCase(gender)).count();
+			if (count == 0) {
+				errorMessage += ", invalid gender";
+			} else {
+				student.setGender(gender);
+			}
+
+		}
+
+		if (student.getBloodGroup() != null && !student.getBloodGroup().equalsIgnoreCase("NULL")
+				&& !student.getBloodGroup().isEmpty()) {
+			String bloodGroup = student.getBloodGroup().trim();
+			Long count = ConfigData.Blood_Group.stream().filter(a -> a.equalsIgnoreCase(bloodGroup)).count();
+			if (count == 0) {
+				errorMessage += ", invalid blood group";
+			} else {
+				student.setBloodGroup(bloodGroup);
+			}
+		}
+
+		if (student.getMartialStatus() != null && !student.getMartialStatus().equalsIgnoreCase("NULL")
+				&& !student.getMartialStatus().isEmpty()) {
+			String martialStatus = student.getMartialStatus().trim();
+			Long count = ConfigData.Martial_Status.stream().filter(a -> a.equalsIgnoreCase(martialStatus)).count();
+			if (count == 0) {
+				errorMessage += ", invalid martial status";
+			} else {
+				student.setMartialStatus(martialStatus);
+			}
+		}
+		if (student.getCid().equalsIgnoreCase("11406000335")) {
+			String aa = "ssaadssa";
+		}
+
 		if (!DateUtil.validateDateFormat(student.getDateOfBirth())) {
 			errorMessage += ", invalid date of birth date format";
 		} else {
 			int age = DateUtil.getDiffYears(DateUtil.stringToDate(student.getDateOfBirth()), new Date());
-			if(age < 16) {
+			if (age < 16) {
 				errorMessage += ", Date Of birth must be above 16 years old";
 			}
 		}
-				
+
 		// valid date format
 //		if (!CSVHelper.validateDateFormat(student.getDateOfBirth(), ConfigData.DateFormat)
 //				&& !student.getDateOfBirth().equalsIgnoreCase("NULL")) {
@@ -132,9 +175,9 @@ public class UploadServiceImpl implements UploadService {
 //		}
 
 		// for already exit check
-		
-		if(CSVHelper.isNumeric(student.getId())) {
-			if(!studentRepo.existsById(Long.parseLong(student.getId()))) {
+
+		if (CSVHelper.isNumeric(student.getId())) {
+			if (!studentRepo.existsById(Long.parseLong(student.getId()))) {
 				errorMessage += ", id doesn't exist";
 			}
 			if (studentRepo.isExistCidNumberById(student.getCid(), Long.parseLong(student.getId()))) {
@@ -191,33 +234,38 @@ public class UploadServiceImpl implements UploadService {
 	private void checkCourseCSVError(CourseCsvDto courseCsvDto) {
 		String errorMessage = "";
 		if (courseCsvDto.getNumberOfApplicantsFemale() != null
+				&& !courseCsvDto.getNumberOfApplicantsFemale().trim().isEmpty()
 				&& !CSVHelper.isNumeric(courseCsvDto.getNumberOfApplicantsFemale())) {
 			errorMessage += ", invalid number of applicants female";
 		}
 
 		if (courseCsvDto.getNumberOfApplicantsMale() != null
+				&& !courseCsvDto.getNumberOfApplicantsMale().trim().isEmpty()
 				&& !CSVHelper.isNumeric(courseCsvDto.getNumberOfApplicantsMale())) {
 			errorMessage += ", invalid number of applicants male";
 		}
 
-		if (courseCsvDto.getCohortSizeFemale() != null && !CSVHelper.isNumeric(courseCsvDto.getCohortSizeFemale())) {
+		if (courseCsvDto.getCohortSizeFemale() != null && !courseCsvDto.getCohortSizeFemale().trim().isEmpty()
+				&& !CSVHelper.isNumeric(courseCsvDto.getCohortSizeFemale())) {
 			errorMessage += ", invalid cohort size female";
 		}
 
-		if (courseCsvDto.getCohortSizeMale() != null && !CSVHelper.isNumeric(courseCsvDto.getCohortSizeMale())) {
+		if (courseCsvDto.getCohortSizeMale() != null && !courseCsvDto.getCohortSizeMale().trim().isEmpty()
+				&& !CSVHelper.isNumeric(courseCsvDto.getCohortSizeMale())) {
 			errorMessage += ", invalid cohort size male";
 		}
 
 		if (courseCsvDto.getNumberOfCertifiedFemale() != null
+				&& !courseCsvDto.getNumberOfCertifiedFemale().trim().isEmpty()
 				&& !CSVHelper.isNumeric(courseCsvDto.getNumberOfCertifiedFemale())) {
 			errorMessage += ", invalid number of certified female";
 		}
 
-		if (courseCsvDto.getNumberOfCertifiedMale() != null
+		if (courseCsvDto.getNumberOfCertifiedMale() != null && !courseCsvDto.getNumberOfCertifiedMale().trim().isEmpty()
 				&& !CSVHelper.isNumeric(courseCsvDto.getNumberOfCertifiedMale())) {
 			errorMessage += ", invalid number of certified male";
 		}
-	
+
 		if (courseCsvDto.getStartDate() == null) {
 			errorMessage += ", start date is empty";
 		} else if (!DateUtil.validateDateFormat(courseCsvDto.getStartDate())) {
@@ -263,7 +311,7 @@ public class UploadServiceImpl implements UploadService {
 		String[] headers = ConfigData.CourseCSVHeaderError;
 		CSVWriter csvWriter;
 		try {
-			csvWriter = new CSVWriter(new FileWriter(filePath));		
+			csvWriter = new CSVWriter(new FileWriter(filePath));
 			csvWriter.writeNext(headers); // write header
 			for (CourseCsvDto course : errorList) {
 				csvWriter.writeNext(new String[] { course.getCourseId(), course.getCourseName(), course.getStatus(),
@@ -271,7 +319,8 @@ public class UploadServiceImpl implements UploadService {
 						course.getEndDate(), course.getCohortSizeMale(), course.getCohortSizeFemale(),
 						course.getNumberOfApplicantsMale(), course.getNumberOfApplicantsFemale(),
 						course.getNumberOfCertifiedMale(), course.getNumberOfCertifiedFemale(), course.getBatchNo(),
-						course.getTrainingLoaction(), course.getTrainerId(),course.getStudentName(), course.getCId(), course.getDId(), course.getErrorMessage() });
+						course.getTrainingLoaction(), course.getTrainerId(), course.getStudentName(), course.getCId(),
+						course.getDId(), course.getErrorMessage() });
 			}
 			csvWriter.close();
 		} catch (IOException e) {
@@ -295,6 +344,16 @@ public class UploadServiceImpl implements UploadService {
 			errorMessage += "Trainer name is empty";
 		}
 
+		if (tainerCsvDto.getGender() != null && !tainerCsvDto.getGender().equalsIgnoreCase("NULL")
+				&& !tainerCsvDto.getGender().isEmpty()) {
+			String gender = tainerCsvDto.getGender().trim();
+			Long count = ConfigData.Gender_List.stream().filter(a -> a.equalsIgnoreCase(gender)).count();
+			if (count == 0) {
+				errorMessage += ", invalid gender";
+			} else {
+				tainerCsvDto.setGender(gender);
+			}
+		}
 //		if (!CSVHelper.validateDateFormat(tainerCsvDto.getJoinDate(), ConfigData.DateFormat)) {
 //			errorMessage += "Invalid join date";
 //		}

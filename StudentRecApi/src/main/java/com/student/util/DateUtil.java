@@ -9,17 +9,17 @@ import java.util.List;
 import java.util.Locale;
 
 public class DateUtil {
-	public static final List<SimpleDateFormat> datePatterns = Arrays.asList(new SimpleDateFormat("d/MM/yyyy H:mm"),
-			new SimpleDateFormat("d/MM/yyyy"), new SimpleDateFormat("dd/MM/yyyy"));
+	public static final List<SimpleDateFormat> datePatterns = Arrays.asList( new SimpleDateFormat("MM/dd/yyyy H:mm"),
+			new SimpleDateFormat("d/MM/yy"));
 
 	public static Date stringToDate(String inputStringDate) {
 		for (SimpleDateFormat pattern : datePatterns) {
 			try {
 				// Take a try
-				return new Date(pattern.parse(inputStringDate).getTime());
-
-			} catch (ParseException pe) {
-				// Loop on
+				Date date = pattern.parse(inputStringDate);
+				return date;
+			} catch (Exception pe) {
+				String aa = pe.getMessage();
 			}
 		}
 		return null;

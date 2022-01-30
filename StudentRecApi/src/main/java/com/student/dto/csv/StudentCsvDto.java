@@ -2,6 +2,9 @@ package com.student.dto.csv;
 import java.text.ParseException;
 import java.util.Date;
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvBindByPosition;
+import com.opencsv.bean.CsvCustomBindByName;
+import com.opencsv.bean.CsvCustomBindByPosition;
 import com.student.dto.StudentDto;
 import com.student.entity.Student;
 import com.student.util.CSVHelper;
@@ -29,7 +32,10 @@ public class StudentCsvDto {
 
 	@CsvBindByName(column = "date_of_birth")
 	private String dateOfBirth;
-
+	
+//	@CsvCustomBindByName(column = "date_of_birth", converter = CSVDateConverter.class)
+//	private String dateOfBirth2;
+	
 	@CsvBindByName(column = "email")
 	private String email;
 
@@ -114,7 +120,9 @@ public class StudentCsvDto {
 		student.setGender(this.gender);
 		student.setBloodGroup(this.bloodGroup);
 		student.setMaritalStatus(this.martialStatus);
-		student.setAvatar(this.avatar);
+		if(this.avatar != null && this.avatar.startsWith("https:")) {
+			student.setAvatar(this.avatar);
+		}
 		student.setStatus(this.status);
 		return student;
 

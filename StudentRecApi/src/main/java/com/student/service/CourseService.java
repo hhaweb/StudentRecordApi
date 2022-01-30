@@ -11,6 +11,7 @@ import com.student.dto.common.SelectedItem;
 public interface CourseService {
 	CourseDto getCourseById(Long id);
 	GenericResponse saveCourse(CourseDto courseDto);
+	GenericResponse saveCourseList(List<CourseDto> courseDtoList);
 	GenericResponse deleteCourse(Long id);
 	List<CourseModel> getCourseListWithPager(SearchDto searchDto);
 	List<CourseDto> getCourseByCid(String cId);

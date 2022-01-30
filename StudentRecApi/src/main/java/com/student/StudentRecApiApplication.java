@@ -13,20 +13,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @SpringBootApplication
 public class StudentRecApiApplication {
 	public static void main(String[] args) {
+		try {
+			Date d1 = new SimpleDateFormat("MM/dd/yyyy H:mm").parse("08/18/2021  7:09");
+			Date d3 = new SimpleDateFormat("d/MM/yy").parse("07/11/2021");
+
+			Date d2 = new SimpleDateFormat("d/MM/yy").parse("11/10/00");
+			String aa = "";
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		SpringApplication.run(StudentRecApiApplication.class, args);
-	
-//		DateFormat df = new SimpleDateFormat("d/MM/yyyy H:mm");
-//		String date = "7/29/2021 11:53";
-//		try {
-//			Date d = df.parse(date);
-//			System.out.print(d);
-//			
-//			
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
 	}
 
 }

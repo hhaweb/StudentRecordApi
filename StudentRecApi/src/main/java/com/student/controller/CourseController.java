@@ -72,6 +72,16 @@ public class CourseController {
 		}
 	}
 	
+	@PostMapping("/add-student")
+	public GenericResponse saveCourseList(@Valid @RequestBody List<CourseDto> courseDtoList) {
+		try {
+			return courseService.saveCourseList(courseDtoList);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new GenericResponse(false, ResponseMessage.SERVER_ERROR);// TODO: handle exception
+		}
+	}
+	
 	@PostMapping("/get-course-list")
 	public List<CourseModel> getCourseList(@Valid @RequestBody SearchDto search) {
 		

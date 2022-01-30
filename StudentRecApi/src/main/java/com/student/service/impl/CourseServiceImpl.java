@@ -109,4 +109,23 @@ public class CourseServiceImpl implements CourseService {
 		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
 	}
 
+	@Override
+	public GenericResponse saveCourseList(List<CourseDto> courseDtoList) {
+		List<Course> courseList = new ArrayList<Course>();
+		for (CourseDto courseDto : courseDtoList) {
+			if(courseDto !=null) {
+				try {
+					courseList.add(courseDto.getEntity());
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		if(courseList.size() > 0) {
+			courseRepo.saveAll(courseList);
+		}
+		return new GenericResponse(true, ResponseMessage.SAVE_SUCCESS);
+	}
+
 }
