@@ -51,5 +51,4 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 	void  deleteCourseByCourseId(@Param("course")Course course);
 	
 	List<Course> findByCourseIdAndCourseNameAndBatchNoAndTrainingLoaction(String courseId, String courseName, String batchNo, String trainingLoaction);
-
 }

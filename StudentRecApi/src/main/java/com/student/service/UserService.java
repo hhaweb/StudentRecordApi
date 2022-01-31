@@ -11,6 +11,7 @@ import com.student.entity.RoutePermission;
 
 public interface UserService {
 	GenericResponse createUser(UserDto userDto) throws ParseException;
+	GenericResponse deleteUser(Long userId);
 	List<RoutePermission> getRoutePermissionByRoleNameList(List<String> roleNameList);
 	List<UserDto> getUserListWithPager(SearchDto searchDto);
 	UserDto getUserById(Long id);

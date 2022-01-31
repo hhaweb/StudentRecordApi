@@ -94,6 +94,17 @@ public class AuthController {
 		}
 		return null;
 	}
+	
+	@GetMapping("/delete-user")
+	public GenericResponse deleteUser(@RequestParam("userId") String userId) {
+		try {
+			Long id = Long.parseLong(userId);
+			return userService.deleteUser(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new GenericResponse(false, ResponseMessage.DELETE_FAIL);// TODO: handle exception
+		}
+	}
 
 	@GetMapping("/get-system-config")
 	public MenuConfigData getMenuConfig() {

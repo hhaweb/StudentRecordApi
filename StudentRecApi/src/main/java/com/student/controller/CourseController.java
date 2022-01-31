@@ -82,6 +82,16 @@ public class CourseController {
 		}
 	}
 	
+	@PostMapping("/remove-student")
+	public GenericResponse removeCourse(@Valid @RequestBody CourseDto courseDto) {
+		try {
+			return courseService.removeStudent(courseDto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new GenericResponse(false, ResponseMessage.SERVER_ERROR);// TODO: handle exception
+		}
+	}
+	
 	@PostMapping("/get-course-list")
 	public List<CourseModel> getCourseList(@Valid @RequestBody SearchDto search) {
 		

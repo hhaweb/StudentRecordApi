@@ -12,6 +12,7 @@ public interface CourseService {
 	CourseDto getCourseById(Long id);
 	GenericResponse saveCourse(CourseDto courseDto);
 	GenericResponse saveCourseList(List<CourseDto> courseDtoList);
+	GenericResponse removeStudent(CourseDto courseDto);
 	GenericResponse deleteCourse(Long id);
 	List<CourseModel> getCourseListWithPager(SearchDto searchDto);
 	List<CourseDto> getCourseByCid(String cId);

@@ -188,4 +188,13 @@ public class UserServiceImpl implements UserService {
 		return roleRepo.findAll();
 	}
 
+	@Override
+	public GenericResponse deleteUser(Long userId) {
+		User user = userRepo.findById(userId).orElse(null);
+		if(user != null) {
+			userRepo.delete(user);
+		}
+		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
+	}
+
 }

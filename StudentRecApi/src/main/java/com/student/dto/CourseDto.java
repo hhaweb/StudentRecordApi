@@ -82,6 +82,36 @@ public class CourseDto {
 		course.setDId(this.dId);
 		return course;
 	}
+	
+	
+	@JsonIgnore
+	public Course getEntity(String cid, String did) throws ParseException {
+		Course course = new Course();
+		// course.setId(id);
+		course.setStartDate(DateUtil.stringToDate(this.startDate));
+		course.setEndDate(DateUtil.stringToDate(this.endDate));
+		
+		course.setCourseId(this.courseId);
+		course.setCourseName(this.courseName);
+		
+		course.setNumberOfApplicantsFemale(this.numberOfApplicantsFemale);
+		course.setNumberOfApplicantsMale(this.numberOfApplicantsMale);
+		course.setCohortSizeFemale(this.cohortSizeFemale);
+		course.setCohortSizeMale(this.cohortSizeMale);
+		course.setNumberOfCertifiedFemale(this.numberOfCertifiedFemale);
+		course.setNumberOfCertifiedMale(this.numberOfCertifiedMale);
+		
+		course.setStatus(this.status);
+		course.setSector(this.sector);
+		course.setCourseLevel(this.courseLevel);
+		course.setDuration(this.duration);
+		course.setBatchNo(this.batchNo);
+		course.setTrainingLoaction(this.trainingLoaction);
+		course.setTrainerId(this.trainerId);
+		course.setCId(cid);
+		course.setDId(did);
+		return course;
+	}
 
 	public CourseDto(Course course) {
 		if(course != null) {

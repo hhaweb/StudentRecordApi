@@ -43,8 +43,27 @@ public class CourseServiceImpl implements CourseService {
 	public GenericResponse saveCourse(CourseDto courseDto) {
 		Course saveObj = null;
 		try {
-			Course course = courseDto.getEntity();
-			saveObj = courseRepo.saveAndFlush(course);
+			if(courseDto.getId() == null || courseDto.getId() ==0) {
+				Course course = courseDto.getEntity();
+				saveObj = courseRepo.saveAndFlush(course);
+			}else { // update case ==> will update all row that have same courseId, courseName, batchNo, trainingLoaction
+				List<Course> saveCourseList = new ArrayList<Course>();
+				Course findObj = courseRepo.findById(courseDto.getId()).orElse(null); // need to find old courseId, courseName, batchNo, trainingLoaction
+				if(findObj != null) {
+					List<Course> courseList = courseRepo.findByCourseIdAndCourseNameAndBatchNoAndTrainingLoaction(findObj.getCourseId(),
+							findObj.getCourseName(), findObj.getBatchNo(), findObj.getTrainingLoaction());
+					for (Course course : courseList) {
+						courseDto.setId(course.getId());
+						courseDto.setCId(course.getCId());
+						courseDto.setDId(course.getDId());
+						saveCourseList.add(courseDto.getEntity());
+					}
+					if(saveCourseList.size() > 0) {
+						courseRepo.saveAll(saveCourseList);
+						saveObj = saveCourseList.get(0);
+					}
+				}
+			}
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -66,9 +85,9 @@ public class CourseServiceImpl implements CourseService {
 		} else {
 			courseList = courseRepo.getCourseByPagerWithoutFilter(paging);
 		}
-		
-		if(courseList.size() > 0) {
-			
+
+		if (courseList.size() > 0) {
+
 			courseList.get(0).setTotalRecords(totalRecords);
 		}
 		return courseList;
@@ -78,7 +97,7 @@ public class CourseServiceImpl implements CourseService {
 	public List<CourseDto> getCourseByCid(String cId) {
 		List<CourseDto> courseDtoList = new ArrayList<CourseDto>();
 		List<Course> courseList = courseRepo.findBycId(cId);
-		if(courseList != null && courseList.size() > 0) {
+		if (courseList != null && courseList.size() > 0) {
 			for (Course course : courseList) {
 				courseDtoList.add(new CourseDto(course));
 			}
@@ -95,15 +114,15 @@ public class CourseServiceImpl implements CourseService {
 			courseIdList.add(course.getCourseId());
 			sectorList.add(course.getSector());
 		}
-		
-		List<CourseModel> recommendedCourses = courseRepo.getRecommendCourses(courseIdList,sectorList) ;
+
+		List<CourseModel> recommendedCourses = courseRepo.getRecommendCourses(courseIdList, sectorList);
 		return recommendedCourses;
 	}
 
 	@Override
 	public GenericResponse deleteCourse(Long id) {
 		Course course = courseRepo.findById(id).orElse(null);
-		if(course != null) {
+		if (course != null) {
 			courseRepo.deleteCourseByCourseId(course);
 		}
 		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
@@ -112,20 +131,39 @@ public class CourseServiceImpl implements CourseService {
 	@Override
 	public GenericResponse saveCourseList(List<CourseDto> courseDtoList) {
 		List<Course> courseList = new ArrayList<Course>();
-		for (CourseDto courseDto : courseDtoList) {
-			if(courseDto !=null) {
+		Course course = null;
+		CourseDto courseDto = null;
+		if(courseDtoList.size() > 0) {
+			course = courseRepo.findById(courseDtoList.get(0).getId()).orElse(null);
+			courseDto = new CourseDto(course);
+		}
+		for (CourseDto dto : courseDtoList) {
+			if (courseDto !=null && dto !=null) {
 				try {
-					courseList.add(courseDto.getEntity());
+					courseList.add(courseDto.getEntity(dto.getCId(), dto.getDId()));
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
-		if(courseList.size() > 0) {
+		if (courseList.size() > 0) {
 			courseRepo.saveAll(courseList);
 		}
 		return new GenericResponse(true, ResponseMessage.SAVE_SUCCESS);
+	}
+
+	@Override
+	public GenericResponse removeStudent(CourseDto courseDto) {
+		List<Course> courseList = courseRepo.findByCourseIdAndCourseNameAndBatchNoAndTrainingLoaction(courseDto.getCourseId(),
+				courseDto.getCourseName(), courseDto.getBatchNo(), courseDto.getTrainingLoaction());
+		for (Course course : courseList) {
+			if(course.getCId().equalsIgnoreCase(courseDto.getCId())) {
+				courseRepo.delete(course);
+				break;
+			}
+		}
+		return new GenericResponse(true, ResponseMessage.DELETE_FAIL);
 	}
 
 }
