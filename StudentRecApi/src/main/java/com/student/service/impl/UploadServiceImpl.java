@@ -436,7 +436,8 @@ public class UploadServiceImpl implements UploadService {
 				} else { // insert student
 					Student saveObj;
 					try {
-						String userName = student.getName() + "-" + student.getCid();
+						// String userName = student.getName() + "-" + student.getCid();
+						String userName = student.getCid();
 						saveObj = student.getEntity();
 						saveStudentList.add(saveObj);
 						if (!userRepo.existsByUserName(userName)) {

@@ -94,7 +94,7 @@ public class AuthController {
 		}
 		return null;
 	}
-	
+
 	@GetMapping("/delete-user")
 	public GenericResponse deleteUser(@RequestParam("userId") String userId) {
 		try {
@@ -127,19 +127,27 @@ public class AuthController {
 		}
 		for (Menus menu : fullMenuList) {
 			if (menuList.size() > 0) {
-				int index = menuList.indexOf(menu.getLabel());
-				if (index != -1) {
+				List<MenuItem> childItem = new ArrayList<MenuItem>();
+				for (MenuItem item : menu.getItems()) {
+					String childLabel = item.getLabel();
+					int i = menuList.indexOf(childLabel);
+					if (i != -1) {
+						childItem.add(item);
+					}
+				}
+
+				if (childItem.size() > 0) {
+					menu.setItems(childItem);
 					roleMenuList.add(menu);
 				}
 			}
 		}
-		
+
 		Long studentId = (long) 0;
 		String profileImage = null;
-		String userName = userDetails.getUserName();
-		if (userName.lastIndexOf("-") != -1) {
-			String cid = userName.substring(userName.lastIndexOf("-") + 1, userName.length());
-			StudentDto studentDto = studentService.getStudentByCid(cid);
+		StudentDto studentDto = studentService.getStudentByCid(userDetails.getUserName());
+
+		if (studentDto != null) {
 			profileImage = studentDto.getBase64Image() != null ? studentDto.getBase64Image()
 					: studentDto.getAvatar() != null ? studentDto.getAvatar() : null;
 			if (studentDto != null) {
@@ -153,7 +161,7 @@ public class AuthController {
 		configData.setUserId(userDetails.getId());
 		configData.setStudentId(studentId);
 		configData.setProfileImage(profileImage);
-		configData.setUserName(userName);
+		configData.setUserName(userDetails.getUserName());
 		return configData;
 	}
 
