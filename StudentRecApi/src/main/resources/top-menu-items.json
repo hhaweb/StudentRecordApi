@@ -17,7 +17,8 @@
 					"/student/student-profile"
 				]
 			}
-		]
+		],
+		"routerLink": []
 	},
 	{
 		"label": "Trainer",
@@ -37,7 +38,8 @@
 					"/trainer/trainer-detail"
 				]
 			}
-		]
+		],
+		"routerLink": []
 	},
 	{
 		"label": "Course",
@@ -57,7 +59,8 @@
 					"/course/course-info"
 				]
 			}
-		]
+		],
+		"routerLink": []
 	},
 	{
 		"label": "Upload",
@@ -77,6 +80,7 @@
 					"/upload/data-upload-history"
 				]
 			}
-		]
+		],
+		"routerLink": []
 	}
 ]
