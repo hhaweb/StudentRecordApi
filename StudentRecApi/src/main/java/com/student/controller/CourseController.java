@@ -168,6 +168,19 @@ public class CourseController {
 		
 	}
 	
+	@PostMapping("/delete-trainers")
+	public GenericResponse deleteTrainers(@Valid @RequestBody List<TrainerDto> trainerDtoList) {// id from course table not courseId
+		GenericResponse response = new GenericResponse();
+		try {
+			response = trainerService.deleteTrainers(trainerDtoList);
+		}catch (Exception e) {
+			e.printStackTrace();
+			response.setMessage(ResponseMessage.SERVER_ERROR);
+		}
+		return response;
+		
+	}
+	
 	@GetMapping("/delete-course")
 	public GenericResponse deleteCourse(@RequestParam("courseId") String courseId) {// id from course table not courseId
 		GenericResponse response = new GenericResponse();
@@ -175,6 +188,19 @@ public class CourseController {
 			Long id = Long.parseLong(courseId);
 			
 			response = courseService.deleteCourse(id);
+		}catch (Exception e) {
+			e.printStackTrace();
+			response.setMessage(ResponseMessage.SERVER_ERROR);
+		}
+		return response;
+		
+	}
+	
+	@PostMapping("/delete-courses")
+	public GenericResponse deleteCourses(@Valid @RequestBody List<CourseDto> courseDtoList) {// id from course table not courseId
+		GenericResponse response = new GenericResponse();
+		try {
+			response = courseService.deleteCourses(courseDtoList);
 		}catch (Exception e) {
 			e.printStackTrace();
 			response.setMessage(ResponseMessage.SERVER_ERROR);

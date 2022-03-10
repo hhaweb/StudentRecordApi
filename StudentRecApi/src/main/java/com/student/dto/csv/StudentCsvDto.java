@@ -119,7 +119,11 @@ public class StudentCsvDto {
 		student.setMobileNo(this.mobileNo);
 		student.setGender(this.gender);
 		student.setBloodGroup(this.bloodGroup);
-		student.setMaritalStatus(this.martialStatus);
+		if(this.martialStatus.equalsIgnoreCase("Select")) {
+			student.setMaritalStatus(null);
+		} else {
+			student.setMaritalStatus(this.martialStatus);
+		}
 		if(this.avatar != null && this.avatar.startsWith("https:")) {
 			student.setAvatar(this.avatar);
 		}

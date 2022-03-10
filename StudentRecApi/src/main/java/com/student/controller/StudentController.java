@@ -2,12 +2,15 @@ package com.student.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,10 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.student.config.ConfigData;
+import com.student.config.ERole;
 import com.student.config.ResponseMessage;
 import com.student.dto.CourseDto;
 import com.student.dto.CourseModel;
 import com.student.dto.StudentDto;
+import com.student.dto.UserDetailsImpl;
+import com.student.dto.UserDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
 import com.student.dto.common.SelectedItem;
@@ -48,6 +55,15 @@ public class StudentController {
 	@GetMapping("/get-student-by-id")
 	public StudentDto getStudentById(@RequestParam("studentId") String id) {
 		Long studentId = Long.parseLong(id);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+		UserDto userDto = new UserDto(userDetails);
+		if(userDto.getRoleName().equalsIgnoreCase(ERole.ROLE_STUDENT.toString())) {
+			StudentDto studentDto = studentService.getStudentByCid(userDto.getUserName());
+			if(!studentDto.getId().equals(studentId)) { // try to stop from looking other student data
+				return null;
+			}
+		}
 		StudentDto studentDto = studentService.getStudentById(studentId);
 		return studentDto;
 
@@ -87,6 +103,18 @@ public class StudentController {
 			return new GenericResponse(false, ResponseMessage.SERVER_ERROR);// TODO: handle exception
 		}
 	}
+	
+	@PostMapping("/delete-students")
+	public GenericResponse deleteStudents(@Valid @RequestBody List<StudentDto> studentList) {
+		try {
+			
+			return studentService.deleteStudents(studentList);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new GenericResponse(false, ResponseMessage.SERVER_ERROR);// TODO: handle exception
+		}
+	}
+
 	
 	
 	@PostMapping("export-student-list")

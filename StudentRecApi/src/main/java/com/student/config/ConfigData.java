@@ -56,7 +56,7 @@ public class ConfigData {
 
 	public static final List<String> Blood_Group = Arrays.asList("AB+", "O+", "A+", "B+", "AB-", "O-", "B-", "A-");
 	public static final List<String> Gender_List = Arrays.asList("F", "M", "male", "female");
-	public static final List<String> Martial_Status = Arrays.asList("Single", "Married", "Select", "Divorced",
+	public static final List<String> Martial_Status = Arrays.asList("Single", "Married", "Separated", "Divorced",
 			"Widowed");
 
 }

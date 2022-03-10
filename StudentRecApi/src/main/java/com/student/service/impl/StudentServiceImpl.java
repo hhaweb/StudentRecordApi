@@ -5,12 +5,16 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.student.config.ERole;
@@ -47,6 +51,9 @@ public class StudentServiceImpl implements StudentService {
 	@Autowired
 	private CourseRepository courseRepo;
 
+	@Autowired
+	PasswordEncoder encoder;
+
 	@Override
 	public StudentDto getStudentById(Long id) {
 		Student student = studentRepo.findById(id).orElse(null);
@@ -73,7 +80,8 @@ public class StudentServiceImpl implements StudentService {
 			id = Long.parseLong(searchDto.getSearchKeyword());
 		}
 		if (searchDto.getSearchKeyword() != null) {
-			totalRecord = studentRepo.getTotalRecordWithFilter(id, searchDto.getSearchKeyword(), searchDto.getSearchKeyword());
+			totalRecord = studentRepo.getTotalRecordWithFilter(id, searchDto.getSearchKeyword(),
+					searchDto.getSearchKeyword());
 		} else {
 			totalRecord = studentRepo.getTotalRecord();
 		}
@@ -88,7 +96,8 @@ public class StudentServiceImpl implements StudentService {
 			if (CSVHelper.isNumeric(searchDto.getSearchKeyword())) {
 				id = Long.parseLong(searchDto.getSearchKeyword());
 			}
-			studentList = studentRepo.getStudentByPager(id, searchDto.getSearchKeyword(), searchDto.getSearchKeyword(), paging);
+			studentList = studentRepo.getStudentByPager(id, searchDto.getSearchKeyword(), searchDto.getSearchKeyword(),
+					paging);
 		} else {
 			studentList = studentRepo.findAll(paging).toList();
 		}
@@ -103,13 +112,12 @@ public class StudentServiceImpl implements StudentService {
 		return studentDtoList;
 	}
 
-	private void saveUser(String userName, String email) {
+	// crate user with student role
+	private void saveUser(String userName, String password) {
 		Role studentRole = roleRepo.findByName(ERole.ROLE_STUDENT).orElse(null);
 		String userEmail = null;
-		if (email != null && !email.isEmpty()) {
-			userEmail = email;
-		}
-		User user = new User(userName, userEmail, null, new Date(), new Date(), studentRole);
+		User user = new User(userName, null	, password, new Date(), new Date(), studentRole);
+		user.setFirstTimeLogin(true);
 		userRepo.save(user);
 	}
 
@@ -156,11 +164,12 @@ public class StudentServiceImpl implements StudentService {
 			}
 
 			if (student.getId() == null || student.getId() == 0) {
-				Long maxId = studentRepo.getStudentMaxId().orElse((long) 0);
-				student.setId(maxId + 1); // set student id
-				String userName = studentDto.getName() + "-" + studentDto.getCid();
+//				Long maxId = studentRepo.getStudentMaxId().orElse((long) 0);
+//				student.setId(maxId + 1); // set student id
+				String userName =  studentDto.getCid();
+				String password = studentDto.getDid().trim().substring(6);//
 				if (!userRepo.existsByUserName(userName)) {
-					saveUser(userName, student.getEmail());
+					saveUser(userName, password);
 				}
 			}
 			EmploymentDto employmentDto = studentDto.getEmployment();
@@ -196,11 +205,10 @@ public class StudentServiceImpl implements StudentService {
 		List<StudentDto> studentDtoList = new ArrayList<StudentDto>();
 		List<String> cidList = new ArrayList<String>();
 		Course course = courseRepo.findById(id).orElse(null);
-		
-		
-		if(course != null) {
-			List<Course> courseList = courseRepo.findByCourseIdAndCourseNameAndBatchNoAndTrainingLoaction(course.getCourseId(), course.getCourseName(), 
-					course.getBatchNo(), course.getTrainingLoaction());
+
+		if (course != null) {
+			List<Course> courseList = courseRepo.findByCourseIdAndCourseNameAndBatchNoAndTrainingLoaction(
+					course.getCourseId(), course.getCourseName(), course.getBatchNo(), course.getTrainingLoaction());
 			courseList.forEach(a -> cidList.add(a.getCId()));
 			List<Student> studentList = studentRepo.findByCidIn(cidList);
 			if (studentList != null && studentList.size() > 0) {
@@ -209,7 +217,7 @@ public class StudentServiceImpl implements StudentService {
 				}
 			}
 		}
-	
+
 		return studentDtoList;
 	}
 
@@ -217,13 +225,30 @@ public class StudentServiceImpl implements StudentService {
 	public GenericResponse deleteStudent(Long studentId) {
 		Student student = studentRepo.findById(studentId).orElse(null);
 		if (student != null) {
-			String userName = student.getName()+"-"+student.getCid();
+			String userName = student.getCid();
 			User user = userRepo.findByUserName(userName).orElse(null);
-			if(user !=null) {
+			if (user != null) {
 				userRepo.delete(user);
 			}
 			courseRepo.deleteBycId(student.getCid());
 			studentRepo.delete(student);
+		}
+		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
+	}
+
+	@Override
+	public GenericResponse deleteStudents(List<StudentDto> studentDtoList) {
+		for (StudentDto studentDto : studentDtoList) {
+			Student student = studentRepo.findById(studentDto.getId()).orElse(null);
+			if (student != null) {
+				String userName = student.getCid();
+				User user = userRepo.findByUserName(userName).orElse(null);
+				if (user != null) {
+					userRepo.delete(user);
+				}
+				courseRepo.deleteBycId(student.getCid());
+				studentRepo.delete(student);
+			}
 		}
 		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
 	}

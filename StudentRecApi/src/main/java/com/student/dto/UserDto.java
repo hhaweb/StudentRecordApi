@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.student.config.ERole;
 import com.student.entity.User;
 
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class UserDto {
 	private String createDate;
 	private String updateDate;
 	private String password;
+	private Boolean firstTimeLogin;
 	private Long roleId;
 	private Long totalRecord;
 	private String roleName;
@@ -43,6 +45,10 @@ public class UserDto {
 			user.setPassword(this.password);
 		}
 		
+		if(this.firstTimeLogin == null) {
+			user.setFirstTimeLogin(false);
+		}
+		
 		user.setUserName(this.userName);
 		return user;
 	}
@@ -54,8 +60,11 @@ public class UserDto {
 		this.createDate = user.getCreateDate() != null ? df.format(user.getCreateDate()) : null;
 		this.updateDate = user.getUpdateDate() != null ? df.format(user.getUpdateDate()) : null;
 		this.roleName = user.getRole().getName().toString();
+		if(this.roleName.equalsIgnoreCase(ERole.ROLE_STUDENT.toString())) {
+			this.password = user.getFirstTimeLogin() == true ? user.getPassword() : null;
+		}
 		this.roleId = user.getRole().getId();
-	}
+	}	
 
 	
 	public UserDto(UserDetailsImpl userDetail) {

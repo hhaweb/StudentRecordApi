@@ -130,4 +130,23 @@ public class TrainerServiceImpl implements TrainerService{
 		return itemList;
 	}
 
+	@Override
+	public GenericResponse deleteTrainers(List<TrainerDto> trainerDtoList) {
+		GenericResponse response = new GenericResponse();
+		for (TrainerDto trainerDto : trainerDtoList) {
+			Trainer trainer = trainerRepo.findById(trainerDto.getId()).orElse(null);
+			
+			if(trainer != null) {
+				courseRepo.updateTrainerIdFromCourse(trainer.getTrainerId());
+				trainerRepo.delete(trainer);
+				response.setStatus(true);
+				response.setMessage("Delete Successfully");
+			} else {
+				response.setStatus(false);
+				response.setMessage("Trainer does not exist");
+			}
+		}
+		return response;
+	}
+
 }

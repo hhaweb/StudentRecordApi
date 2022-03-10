@@ -14,7 +14,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +45,7 @@ import com.student.entity.User;
 import com.student.repository.UserRepository;
 import com.student.service.StudentService;
 import com.student.service.UserService;
+import com.student.service.impl.UserDetailsServiceImpl;
 import com.student.util.CommonUtil;
 import com.student.util.JwtUtils;
 
@@ -63,22 +66,30 @@ public class AuthController {
 
 	@Autowired
 	StudentService studentService;
-
+	
 	@Autowired
-	PasswordEncoder encoder;
+	private UserDetailsServiceImpl userDetailsService;
+
 
 	@PostMapping("/login")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginModel loginRequest) {
 		Authentication authentication = null;
+		boolean isFirstTime = false;
 		try {
 			authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
-		} catch (Exception e) {
-			return ResponseEntity.ok(new JwtResponse(false));
+		} catch (Exception e) { // try with plain text password for first time login
+			UserDetails userDetails = userService.findByUserNameAndPlainPassword(loginRequest.getUserName(), loginRequest.getPassword());
+			if(userDetails == null ) {
+				return ResponseEntity.ok(new JwtResponse(false));
+			}
+			authentication = new UsernamePasswordAuthenticationToken(
+			userDetails, null, userDetails.getAuthorities());	
+			isFirstTime = true;
 		}
 		SecurityContextHolder.getContext().setAuthentication(authentication); // to save login user authencation info
 		String jwt = jwtUtils.generateJwtToken(authentication);
-		return ResponseEntity.ok(new JwtResponse(jwt, true));
+		return ResponseEntity.ok(new JwtResponse(jwt, true, isFirstTime));
 	}
 
 	@PostMapping("/save-user")
@@ -193,7 +204,6 @@ public class AuthController {
 		Long userId = Long.parseLong(id);
 		UserDto userDto = userService.getUserById(userId);
 		return userDto;
-
 	}
 
 	@GetMapping("get-roles")
@@ -206,5 +216,17 @@ public class AuthController {
 		}
 		return itemList;
 
+	}
+	
+	@GetMapping("change-password")
+	public GenericResponse changePassword(@RequestParam("password") String password) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+		if (userDetails != null) {
+			UserDto userDto = new UserDto(userDetails);
+			userDto.setPassword(password);
+			return userService.changePasswordForFirstTimeLogin(userDto);
+		}
+		return new GenericResponse(false, "");
 	}
 }

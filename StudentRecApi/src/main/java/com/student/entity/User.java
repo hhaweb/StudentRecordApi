@@ -41,6 +41,8 @@ public class User implements Serializable{
 	@Column(name = "email")
 	private String email;
 	
+	@Column(name = "first_time_login")
+	private Boolean firstTimeLogin;
 	
 	@Size(max = 120)
 	@Column(name = "password")

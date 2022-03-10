@@ -10,10 +10,12 @@ public class JwtResponse {
 	private String token;
 	private String type = "Bearer";
 	private boolean status;
-	public JwtResponse(String token, boolean status) {
+	private boolean firstTimeLogin;
+	public JwtResponse(String token, boolean status, boolean isFirstTimeLogin) {
 		super();
 		this.token = token;
 		this.status = status;
+		this.firstTimeLogin = isFirstTimeLogin;
 	}
 	public JwtResponse(boolean status) {
 		super();

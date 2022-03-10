@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.student.config.ERole;
+import com.student.dto.UserDetailsImpl;
 import com.student.dto.UserDto;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.ResponseMessage;
@@ -52,7 +54,7 @@ public class UserServiceImpl implements UserService {
 				return new GenericResponse(false, "Error: Email already exist");
 			}
 			existingUser.setUserName(userDto.getUserName());
-			if(userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
+			if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
 				existingUser.setPassword(encoder.encode(userDto.getPassword()));
 			}
 			existingUser.setUpdateDate(new Date());
@@ -110,9 +112,17 @@ public class UserServiceImpl implements UserService {
 		if (userDto.getUserName() == null) {
 			return new GenericResponse(false, "Error: Invalid user name");
 		}
-		if(userDto.getRoleId() == null || userDto.getRoleId() == 0) {
+		if (userDto.getRoleId() == null || userDto.getRoleId() == 0) {
 			return new GenericResponse(false, "Error: Please add role");
 		}
+
+		if (userDto.getId() == null || userDto.getId() == 0) {
+			User user = userRepo.findByUserName(userDto.getUserName()).orElse(null);
+			if (user != null) {
+				return new GenericResponse(false, "Error: User name already exist");
+			}
+		}
+
 		User saveObj = null;
 		if (userDto.getId() == null) {
 			User user = userDto.getEntity();
@@ -131,7 +141,7 @@ public class UserServiceImpl implements UserService {
 				Role role = roleRepo.findById(userDto.getRoleId()).orElse(null);
 				user.setRole(role);
 			}
-		
+
 			saveObj = userRepo.saveAndFlush(user);
 		} else {
 			return updateUser(userDto); // update user
@@ -191,10 +201,31 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public GenericResponse deleteUser(Long userId) {
 		User user = userRepo.findById(userId).orElse(null);
-		if(user != null) {
+		if (user != null) {
 			userRepo.delete(user);
 		}
 		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
+	}
+
+	@Override
+	public UserDetailsImpl findByUserNameAndPlainPassword(String userName, String password) {
+		User user = userRepo.findByUserNameAndPassword(userName, password).orElse(null);
+		return user != null ? UserDetailsImpl.build(user) : null;
+	}
+
+	@Override
+	public GenericResponse changePasswordForFirstTimeLogin(UserDto userDto) {
+		if (userDto.getPassword() == null) {
+			return new GenericResponse(false, "Password is empty");
+		}
+		User existingUser = userRepo.findByUserName(userDto.getUserName()).orElse(null);
+		if (existingUser == null) {
+			return new GenericResponse(false, "User doesn't exist");
+		}
+		existingUser.setPassword(encoder.encode(userDto.getPassword()));
+		existingUser.setFirstTimeLogin(false);
+		userRepo.save(existingUser);
+		return new GenericResponse(true, "Save successfully");
 	}
 
 }

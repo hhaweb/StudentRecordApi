@@ -123,9 +123,12 @@ public class CourseServiceImpl implements CourseService {
 	public GenericResponse deleteCourse(Long id) {
 		Course course = courseRepo.findById(id).orElse(null);
 		if (course != null) {
-			courseRepo.deleteCourseByCourseId(course);
+			List<Course> courseList = courseRepo.findByCourseIdAndCourseNameAndBatchNoAndTrainingLoaction(course.getCourseId(),
+					course.getCourseName(), course.getBatchNo(), course.getTrainingLoaction());		
+			courseRepo.deleteAll(courseList);
+			return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
 		}
-		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
+		return new GenericResponse(true, ResponseMessage.DELETE_FAIL);
 	}
 
 	@Override
@@ -163,7 +166,20 @@ public class CourseServiceImpl implements CourseService {
 				break;
 			}
 		}
-		return new GenericResponse(true, ResponseMessage.DELETE_FAIL);
+		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
+	}
+
+	@Override
+	public GenericResponse deleteCourses(List<CourseDto> courseDtoList) {
+
+		for (CourseDto courseDto : courseDtoList) {
+			
+			Course findObj = courseRepo.findById(courseDto.getId()).orElse(null); // need to find old courseId, courseName, batchNo, trainingLoaction
+			List<Course> courseList = courseRepo.findByCourseIdAndCourseNameAndBatchNoAndTrainingLoaction(findObj.getCourseId(),
+					findObj.getCourseName(), findObj.getBatchNo(), findObj.getTrainingLoaction());
+			courseRepo.deleteAll(courseList);
+		}
+		return new GenericResponse(true, ResponseMessage.DELETE_SUCCESS);
 	}
 
 }

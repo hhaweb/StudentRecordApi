@@ -12,6 +12,7 @@ public interface TrainerService {
 	List<TrainerDto> getTrainerListWithPager(SearchDto searchDto);
 	GenericResponse saveTrainer(TrainerDto courseDto);
 	GenericResponse deleteTrainer(Long id);
+	GenericResponse deleteTrainers(List<TrainerDto> trainerDtoList);
 	List<SelectedItem> getAllTrainer();
 	
 }

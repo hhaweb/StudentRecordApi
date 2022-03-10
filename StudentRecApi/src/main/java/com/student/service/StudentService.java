@@ -1,6 +1,7 @@
 package com.student.service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.student.dto.StudentDto;
 import com.student.dto.common.GenericResponse;
@@ -14,6 +15,6 @@ public interface StudentService {
 	List<StudentDto> getStudentWithPager(SearchDto searchDto);
 	GenericResponse saveStudent(StudentDto studentDto);
 	GenericResponse deleteStudent(Long studentId);
+	GenericResponse deleteStudents(List<StudentDto> studentDtoList);
 	List<StudentDto> getStudentByCourseId(Long id);
-
 }

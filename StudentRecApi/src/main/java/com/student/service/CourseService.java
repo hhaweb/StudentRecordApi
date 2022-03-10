@@ -6,7 +6,6 @@ import com.student.dto.CourseDto;
 import com.student.dto.CourseModel;
 import com.student.dto.common.GenericResponse;
 import com.student.dto.common.SearchDto;
-import com.student.dto.common.SelectedItem;
 
 public interface CourseService {
 	CourseDto getCourseById(Long id);
@@ -14,6 +13,7 @@ public interface CourseService {
 	GenericResponse saveCourseList(List<CourseDto> courseDtoList);
 	GenericResponse removeStudent(CourseDto courseDto);
 	GenericResponse deleteCourse(Long id);
+	GenericResponse deleteCourses(List<CourseDto> courseDtoList);
 	List<CourseModel> getCourseListWithPager(SearchDto searchDto);
 	List<CourseDto> getCourseByCid(String cId);
 	List<CourseModel> getRecommendedCourses(String cid);

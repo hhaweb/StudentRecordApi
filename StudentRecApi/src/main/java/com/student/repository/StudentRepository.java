@@ -23,6 +23,9 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
 	@Query(value = "select case when count(s)> 0 then true else false end from Student s where s.did =:did")
 	boolean isExistDidNumber(@Param("did") String did);
+	
+	@Query(value = "select case when count(s)> 0 then true else false end from Student s where s.did like %:did ")
+	boolean isExistDidNumberForCourseUpload(@Param("did") String did);
 
 	@Query(value = "select case when count(s)> 0 then true else false end  from Student s where s.did =:did and s.id !=:id")
 	boolean isExistDidNumberById(@Param("did") String did, @Param("id") Long id);
