@@ -127,9 +127,9 @@ public class ExcelWriter {
 		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
 		response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION);
 		OutputStream outputStream = null;
-		try {
+		try {// C:TomcatServerUploadFiles\template/StudentDetail.xlsx
+			System.out.println("Excel file path ====" + filePath+File.separator+"template/StudentDetail.xlsx");
 			File file = new File(filePath+File.separator+"template/StudentDetail.xlsx");
-
 			OPCPackage pkg = OPCPackage.open(file);
 			outputStream = response.getOutputStream();
 			XSSFWorkbook workbook = new XSSFWorkbook(pkg);
@@ -269,9 +269,11 @@ public class ExcelWriter {
 	}
 
 	private static void createCellWithDate(Cell cell, Date date, CellStyle cellStyle) {
-		cell.setCellValue(date);
-		if (cellStyle != null) {
-			cell.setCellStyle(cellStyle);
+		if(date != null) {
+			cell.setCellValue(date);
+			if (cellStyle != null) {
+				cell.setCellStyle(cellStyle);
+			}
 		}
 	}
 

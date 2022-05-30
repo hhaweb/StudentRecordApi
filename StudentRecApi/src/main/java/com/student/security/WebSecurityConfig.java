@@ -78,6 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				config.setAllowedMethods(Collections.singletonList("*"));
 				config.addAllowedOrigin("http://172.104.40.242:4200");
 				config.addAllowedOrigin("http://localhost:4200");
+				config.addAllowedOrigin("http://localhost:8080");
 
 				config.setAllowCredentials(true);
 				return config;

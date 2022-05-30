@@ -137,6 +137,7 @@ public class StudentController {
 		List<CourseModel> recommandCourseList = courseService.getRecommendedCourses(studentDto.getCid());
 		studentDto.setCourseList(courseList);
 		studentDto.setRecommandCourses(recommandCourseList);
+		System.out.println("uploadPath ===="+uploadPath);
 		ExcelWriter.exportStudentDetails(response, studentDto, uploadPath);
 	}
 	
